@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 2,
+  "contentVersion": "baigu-v2-1",
+  "startNode": "a01_001",
+  "nodes": [
+    {
+      "id": "a01_001",
+      "type": "line",
+      "speaker": "旁白",
+      "text": "山路在脚下，前头还远。",
+      "backgroundId": "bg_mountain",
+      "next": "a01_obs"
+    },
+    {
+      "id": "a01_obs",
+      "type": "observe",
+      "speaker": "旁白",
+      "text": "（可先看望远景，也可继续赶路。）",
+      "resume": "a01_010",
+      "objects": [
+        {
+          "id": "obs01_peach",
+          "label": "望望远处的山桃",
+          "next": "a01_obs_peach"
+        }
+      ]
+    },
+    {
+      "id": "a01_obs_peach",
+      "type": "line",
+      "speaker": "旁白",
+      "text": "南山的方向，似乎有一点熟透的颜色。",
+      "noteId": "mem_open_road",
+      "next": "a01_obs"
+    },
+    {
+      "id": "a01_010",
+      "type": "line",
+      "speaker": "孙悟空",
+      "text": "这一路只有空山，南面倒有熟桃，我去摘些。",
+      "next": "a01_011"
+    },
+    {
+      "id": "a01_011",
+      "type": "line",
+      "speaker": "唐僧",
+      "text": "你早去早回。",
+      "next": "test_end"
+    },
+    {
+      "id": "test_end",
+      "type": "end",
+      "speaker": "旁白",
+      "text": "测试剧情到此结束。"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+# =========================
+# Unity generated
+# =========================
+
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+
+[Bb]uild/
+[Bb]uilds/
+
+[Mm]emoryCaptures/
+[Rr]ecordings/
+
+# =========================
+# IDE
+# =========================
+
+.vs/
+.idea/
+
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+
+*.pidb
+*.booproj
+*.svd
+*.opendb
+*.VC.db
+
+# =========================
+# OS generated
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+# Gradle / Android
+# =========================
+
+.gradle/
+
+# =========================
+# Unity temporary/export files
+# =========================
+
+ExportedObj/
+*.tmp
+*.log
