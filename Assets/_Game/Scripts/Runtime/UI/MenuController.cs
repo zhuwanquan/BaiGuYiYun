@@ -23,24 +23,60 @@ namespace BaiguVN
         private readonly Stack<GameObject> panelStack =
             new Stack<GameObject>();
 
+        private bool titleMode;
+
         private void Start()
         {
-            // 启动时确保覆盖窗口全部关闭
-            SetPanelActive(historyPanel, false);
-            SetPanelActive(saveLoadPanel, false);
-            SetPanelActive(settingsPanel, false);
-            SetPanelActive(journeyPanel, false);
-            SetPanelActive(memorialPanel, false);
+            ShowTitle();
         }
 
         private void Update()
         {
-            // PC 的 Esc / Android 返回键后面都统一走 Back()
             if (Keyboard.current != null &&
                 Keyboard.current.escapeKey.wasPressedThisFrame)
             {
                 Back();
             }
+        }
+
+        public void StartNewGame()
+        {
+            CloseAllOverlayPanels();
+
+            titleMode = false;
+
+            if (titlePanel != null)
+                titlePanel.SetActive(false);
+
+            if (storyPanel != null)
+                storyPanel.SetActive(true);
+
+            if (storyRunner != null)
+            {
+                storyRunner.SetMenuPaused(false);
+                storyRunner.StartStory();
+            }
+        }
+
+        public void ReturnToTitle()
+        {
+            ShowTitle();
+        }
+
+        public void ShowTitle()
+        {
+            CloseAllOverlayPanels();
+
+            titleMode = true;
+
+            if (storyPanel != null)
+                storyPanel.SetActive(false);
+
+            if (titlePanel != null)
+                titlePanel.SetActive(true);
+
+            if (storyRunner != null)
+                storyRunner.SetMenuPaused(true);
         }
 
         public void OpenHistory()
@@ -70,16 +106,8 @@ namespace BaiguVN
 
         public void Push(GameObject panel)
         {
-            if (panel == null)
-            {
+            if (panel == null || panel.activeSelf)
                 return;
-            }
-
-            // 已经打开就不要重复压栈
-            if (panel.activeSelf)
-            {
-                return;
-            }
 
             panel.SetActive(true);
             panel.transform.SetAsLastSibling();
@@ -87,43 +115,51 @@ namespace BaiguVN
             panelStack.Push(panel);
 
             if (storyRunner != null)
-            {
                 storyRunner.SetMenuPaused(true);
-            }
         }
 
         public void Pop()
         {
             if (panelStack.Count == 0)
-            {
                 return;
-            }
 
             GameObject panel = panelStack.Pop();
 
             if (panel != null)
-            {
                 panel.SetActive(false);
-            }
 
             if (panelStack.Count == 0 &&
                 storyRunner != null)
             {
-                storyRunner.SetMenuPaused(false);
+                storyRunner.SetMenuPaused(titleMode);
             }
         }
 
         public void Back()
         {
-            // 优先关闭最上层覆盖窗口
             if (panelStack.Count > 0)
             {
                 Pop();
                 return;
             }
 
-            // 目前标题页还没正式制作，
-            // 所以没有覆盖窗口时暂时什么都不做。
+            // 正文状态按 Esc 暂时返回标题。
+            // 后续可再加入确认框。
+            if (!titleMode)
+            {
+                ShowTitle();
+            }
+        }
+
+        private void CloseAllOverlayPanels()
+        {
+            panelStack.Clear();
+
+            SetPanelActive(historyPanel, false);
+            SetPanelActive(saveLoadPanel, false);
+            SetPanelActive(settingsPanel, false);
+            SetPanelActive(journeyPanel, false);
+            SetPanelActive(memorialPanel, false);
         }
 
         private void SetPanelActive(
@@ -131,9 +167,7 @@ namespace BaiguVN
             bool active)
         {
             if (panel != null)
-            {
                 panel.SetActive(active);
-            }
         }
     }
 }

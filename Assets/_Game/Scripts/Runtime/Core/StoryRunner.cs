@@ -67,7 +67,6 @@ namespace BaiguVN
             observationView.ObjectSelected += OpenObserve;
             observationView.ContinueSelected += ResumeObserve;
 
-            StartStory();
         }
 
         private void OnDestroy()
