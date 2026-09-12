@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 namespace BaiguVN
 {
@@ -12,6 +13,9 @@ namespace BaiguVN
         [Header("主要页面")]
         public GameObject titlePanel;
         public GameObject storyPanel;
+
+        [Header("标题页")]
+        public Button continueButton;
 
         [Header("覆盖页面")]
         public GameObject historyPanel;
@@ -39,6 +43,10 @@ namespace BaiguVN
             }
         }
 
+        // =========================================================
+        // 新游戏
+        // =========================================================
+
         public void StartNewGame()
         {
             CloseAllOverlayPanels();
@@ -46,10 +54,14 @@ namespace BaiguVN
             titleMode = false;
 
             if (titlePanel != null)
+            {
                 titlePanel.SetActive(false);
+            }
 
             if (storyPanel != null)
+            {
                 storyPanel.SetActive(true);
+            }
 
             if (storyRunner != null)
             {
@@ -57,6 +69,54 @@ namespace BaiguVN
                 storyRunner.StartStory();
             }
         }
+
+        // =========================================================
+        // 继续游戏：读取自动档 Slot 0
+        // =========================================================
+
+        public void ContinueGame()
+        {
+            if (storyRunner == null)
+            {
+                Debug.LogError(
+                    "MenuController：没有指定 StoryRunner。"
+                );
+                return;
+            }
+
+            bool loaded =
+                storyRunner.TryLoadSlot(0);
+
+            if (!loaded)
+            {
+                Debug.LogWarning(
+                    "没有可以继续的自动存档。"
+                );
+
+                RefreshContinueButton();
+                return;
+            }
+
+            CloseAllOverlayPanels();
+
+            titleMode = false;
+
+            if (titlePanel != null)
+            {
+                titlePanel.SetActive(false);
+            }
+
+            if (storyPanel != null)
+            {
+                storyPanel.SetActive(true);
+            }
+
+            storyRunner.SetMenuPaused(false);
+        }
+
+        // =========================================================
+        // 标题页
+        // =========================================================
 
         public void ReturnToTitle()
         {
@@ -70,14 +130,41 @@ namespace BaiguVN
             titleMode = true;
 
             if (storyPanel != null)
+            {
                 storyPanel.SetActive(false);
+            }
 
             if (titlePanel != null)
+            {
                 titlePanel.SetActive(true);
+            }
 
             if (storyRunner != null)
+            {
                 storyRunner.SetMenuPaused(true);
+            }
+
+            RefreshContinueButton();
         }
+
+        private void RefreshContinueButton()
+        {
+            if (continueButton == null)
+            {
+                return;
+            }
+
+            bool hasAutoSave =
+                storyRunner != null &&
+                storyRunner.HasSaveSlot(0);
+
+            continueButton.interactable =
+                hasAutoSave;
+        }
+
+        // =========================================================
+        // 覆盖页面
+        // =========================================================
 
         public void OpenHistory()
         {
@@ -106,8 +193,11 @@ namespace BaiguVN
 
         public void Push(GameObject panel)
         {
-            if (panel == null || panel.activeSelf)
+            if (panel == null ||
+                panel.activeSelf)
+            {
                 return;
+            }
 
             panel.SetActive(true);
             panel.transform.SetAsLastSibling();
@@ -115,23 +205,32 @@ namespace BaiguVN
             panelStack.Push(panel);
 
             if (storyRunner != null)
+            {
                 storyRunner.SetMenuPaused(true);
+            }
         }
 
         public void Pop()
         {
             if (panelStack.Count == 0)
+            {
                 return;
+            }
 
-            GameObject panel = panelStack.Pop();
+            GameObject panel =
+                panelStack.Pop();
 
             if (panel != null)
+            {
                 panel.SetActive(false);
+            }
 
             if (panelStack.Count == 0 &&
                 storyRunner != null)
             {
-                storyRunner.SetMenuPaused(titleMode);
+                storyRunner.SetMenuPaused(
+                    titleMode
+                );
             }
         }
 
@@ -143,8 +242,6 @@ namespace BaiguVN
                 return;
             }
 
-            // 正文状态按 Esc 暂时返回标题。
-            // 后续可再加入确认框。
             if (!titleMode)
             {
                 ShowTitle();
@@ -167,7 +264,9 @@ namespace BaiguVN
             bool active)
         {
             if (panel != null)
+            {
                 panel.SetActive(active);
+            }
         }
     }
 }
