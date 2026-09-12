@@ -341,6 +341,31 @@ namespace BaiguVN
             menuPaused = paused;
         }
 
+        public List<HistoryEntry> GetHistoryCopy()
+        {
+            if (state == null || state.history == null)
+            {
+                return new List<HistoryEntry>();
+            }
+
+            List<HistoryEntry> copy =
+                new List<HistoryEntry>();
+
+            foreach (HistoryEntry entry in state.history)
+            {
+                copy.Add(
+                    new HistoryEntry
+                    {
+                        nodeId = entry.nodeId,
+                        speaker = entry.speaker,
+                        text = entry.text
+                    }
+                );
+            }
+
+            return copy;
+        }
+
         // =========================================================
         // 保存
         // =========================================================
