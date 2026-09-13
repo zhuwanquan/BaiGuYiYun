@@ -26,8 +26,11 @@ namespace BaiguVN
 
         public string backgroundId;
         public string portraitId;
+        public int portraitSlot = 1;
         public string bgmId;
         public string noteId;
+
+        public string completeChapter;
 
         public VNObserveObject[] objects;
     }
@@ -53,6 +56,7 @@ namespace BaiguVN
     {
         public string backgroundId;
         public string portraitId;
+        public int portraitSlot = 1;
         public string bgmId;
     }
 

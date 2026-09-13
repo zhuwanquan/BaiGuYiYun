@@ -42,6 +42,7 @@ namespace BaiguVN
             {
                 backgroundId = visuals.backgroundId,
                 portraitId = visuals.portraitId,
+                portraitSlot = visuals.portraitSlot,
                 bgmId = visuals.bgmId
             };
 
@@ -77,6 +78,7 @@ namespace BaiguVN
             {
                 backgroundId = visuals.backgroundId,
                 portraitId = visuals.portraitId,
+                portraitSlot = visuals.portraitSlot,
                 bgmId = visuals.bgmId
             };
 

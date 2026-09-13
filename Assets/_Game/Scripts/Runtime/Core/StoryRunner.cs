@@ -250,6 +250,38 @@ namespace BaiguVN
             }
         }
 
+        private void RegisterCompletedChapter(VNNode node)
+        {
+            if (node == null ||
+                string.IsNullOrWhiteSpace(node.completeChapter))
+            {
+                return;
+            }
+
+            if (state == null)
+            {
+                return;
+            }
+
+            if (state.completedChapters == null)
+            {
+                state.completedChapters =
+                    new List<string>();
+            }
+
+            if (!state.completedChapters.Contains(
+                node.completeChapter))
+            {
+                state.completedChapters.Add(
+                    node.completeChapter
+                );
+
+                Debug.Log(
+                    $"章节完成：{node.completeChapter}"
+                );
+            }
+        }
+
         // =========================================================
         // 进入剧情节点
         // =========================================================
@@ -267,6 +299,7 @@ namespace BaiguVN
             // "-" = 清除背景
             // -----------------------------------------------------
 
+            // 背景
             if (presentation != null &&
                 !string.IsNullOrEmpty(node.backgroundId))
             {
@@ -276,6 +309,22 @@ namespace BaiguVN
 
                 state.visuals.backgroundId =
                     node.backgroundId;
+            }
+
+            // 立绘
+            if (presentation != null &&
+                !string.IsNullOrEmpty(node.portraitId))
+            {
+                presentation.ApplyPortrait(
+                    node.portraitId,
+                    node.portraitSlot
+                );
+
+                state.visuals.portraitId =
+                    node.portraitId;
+
+                state.visuals.portraitSlot =
+                    node.portraitSlot;
             }
 
             // -----------------------------------------------------
@@ -327,6 +376,8 @@ namespace BaiguVN
                     );
                     break;
             }
+
+            RegisterCompletedChapter(node);
 
             // 进入一个稳定节点以后自动保存到 Slot 0
             AutoSaveCurrent();
@@ -631,6 +682,19 @@ namespace BaiguVN
                     );
                     break;
             }
+        }
+
+        public List<string> GetCompletedChaptersCopy()
+        {
+            if (state == null ||
+                state.completedChapters == null)
+            {
+                return new List<string>();
+            }
+
+            return new List<string>(
+                state.completedChapters
+            );
         }
     }
 }
