@@ -204,6 +204,31 @@ namespace BaiguVN
             }
         }
 
+        public void ResetForNewGame()
+        {
+            // 清除背景
+            if (background != null)
+            {
+                background.sprite = null;
+                background.enabled = false;
+            }
+
+            // 清除人物立绘
+            HideAllCharacters();
+
+            // 清除 CG
+            HideCG();
+
+            // 确保黑色遮罩不是残留状态
+            if (fadeOverlay != null)
+            {
+                Color color = fadeOverlay.color;
+                color.a = 0f;
+                fadeOverlay.color = color;
+                fadeOverlay.raycastTarget = false;
+            }
+        }
+
         // =========================================================
         // CG
         // =========================================================

@@ -1703,6 +1703,14 @@ MonoBehaviour:
   seClips:
   - id: se_click
     clip: {fileID: 8300000, guid: 96a295ba4c0251345855d417968d3a33, type: 3}
+  - id: se_step_gravel
+    clip: {fileID: 8300000, guid: aad374630facf8340a30d909a2557b10, type: 3}
+  - id: se_wind
+    clip: {fileID: 8300000, guid: 2ba0e44d60060464990e4b7f2b3b73e9, type: 3}
+  - id: se_staff_swing
+    clip: {fileID: 8300000, guid: 995d0e5b06e23164c9f60151cdd341bf, type: 3}
+  - id: se_impact
+    clip: {fileID: 8300000, guid: 91a832096fa95fb449849f487c94935c, type: 3}
 --- !u!82 &310615635
 AudioSource:
   m_ObjectHideFlags: 0

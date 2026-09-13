@@ -31,6 +31,7 @@
       "type": "line",
       "speaker": "旁白",
       "text": "南山的方向，似乎有一点熟透的颜色。",
+      "seId": "se_wind",
       "noteId": "mem_open_road",
       "next": "a01_obs"
     },
@@ -41,6 +42,7 @@
       "text": "这一路只有空山，南面倒有熟桃，我去摘些。",
       "portraitId": "wukong_test",
       "portraitSlot": 1,
+      "seId": "se_step_gravel",
       "next": "a01_011"
     },
     {

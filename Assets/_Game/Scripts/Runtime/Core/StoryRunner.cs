@@ -104,13 +104,33 @@ namespace BaiguVN
 
         public void StartStory()
         {
+            // 先清除上一局残留的视觉内容
+            if (presentation != null)
+            {
+                presentation.ResetForNewGame();
+            }
+
+            // 新游戏重新开始 BGM，
+            // 防止继承上一局正在播放的音乐状态
+            if (audioService != null)
+            {
+                audioService.StopBgm();
+            }
+
+            // 创建全新的剧情状态
             state = new GameState();
 
-            observationView.Hide();
+            if (observationView != null)
+            {
+                observationView.Hide();
+            }
 
-            dialogueView.gameObject.SetActive(true);
-            dialogueView.nextButton.interactable = true;
+            if (dialogueView != null)
+            {
+                dialogueView.gameObject.SetActive(true);
+            }
 
+            // 从故事起点重新开始
             GoTo(repository.StartNode);
         }
 
