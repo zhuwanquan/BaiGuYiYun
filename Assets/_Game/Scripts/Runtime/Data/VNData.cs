@@ -27,9 +27,11 @@ namespace BaiguVN
         public string backgroundId;
         public string portraitId;
         public int portraitSlot = 1;
-        public string bgmId;
-        public string noteId;
 
+        public string bgmId;
+        public string seId;
+
+        public string noteId;
         public string completeChapter;
 
         public VNObserveObject[] objects;

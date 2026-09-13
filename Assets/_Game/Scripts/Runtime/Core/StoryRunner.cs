@@ -16,6 +16,9 @@ namespace BaiguVN
         [Header("Presentation")]
         public PresentationController presentation;
 
+        [Header("Audio")]
+        public AudioService audioService;
+
         private StoryRepository repository;
         private GameState state;
         private SaveService saveService;
@@ -327,6 +330,28 @@ namespace BaiguVN
                     node.portraitSlot;
             }
 
+            // BGM
+            if (audioService != null &&
+                !string.IsNullOrEmpty(node.bgmId))
+            {
+                audioService.ApplyBgm(
+                    node.bgmId
+                );
+
+                state.visuals.bgmId =
+                    node.bgmId;
+            }
+
+            // 一次性剧情音效
+            // SE：只播放一次，不写进存档
+            if (audioService != null &&
+                !string.IsNullOrEmpty(node.seId))
+            {
+                audioService.PlaySe(
+                    node.seId
+                );
+            }
+
             // -----------------------------------------------------
             // 节点类型
             // -----------------------------------------------------
@@ -616,6 +641,15 @@ namespace BaiguVN
             {
                 presentation.ApplySnapshot(
                     state.visuals
+                );
+            }
+
+            if (audioService != null &&
+                !string.IsNullOrEmpty(
+                    state.visuals.bgmId))
+            {
+                audioService.ApplyBgm(
+                    state.visuals.bgmId
                 );
             }
 

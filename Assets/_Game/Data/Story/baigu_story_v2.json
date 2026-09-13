@@ -9,6 +9,7 @@
       "speaker": "旁白",
       "text": "山路在脚下，前头还远。",
       "backgroundId": "bg_mountain",
+      "bgmId": "bgm_mountain",
       "next": "a01_obs"
     },
     {

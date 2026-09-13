@@ -1244,6 +1244,7 @@ GameObject:
   - component: {fileID: 259248060}
   - component: {fileID: 259248059}
   - component: {fileID: 259248063}
+  - component: {fileID: 259248064}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1364,6 +1365,20 @@ MonoBehaviour:
   portraits:
   - id: wukong_test
     sprite: {fileID: 21300000, guid: 338e180f5be41184380c90a72434703b, type: 3}
+--- !u!114 &259248064
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 259248058}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 828eee7dca398064b8b4ec85f8da4deb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BaiguVN.UIButtonSoundBinder
+  audioService: {fileID: 310615633}
+  clickSeId: se_click
 --- !u!1 &270786057
 GameObject:
   m_ObjectHideFlags: 0
@@ -1682,6 +1697,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BaiguVN.AudioService
   bgmSource: {fileID: 310615636}
   seSource: {fileID: 310615635}
+  bgmClips:
+  - id: bgm_mountain
+    clip: {fileID: 8300000, guid: 10abeb7d62f56944ba6a081287d4eb59, type: 3}
+  seClips:
+  - id: se_click
+    clip: {fileID: 8300000, guid: 96a295ba4c0251345855d417968d3a33, type: 3}
 --- !u!82 &310615635
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4965,7 +4986,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2061971455}
         m_TargetAssemblyTypeName: BaiguVN.MenuController, Assembly-CSharp
-        m_MethodName: OpenSaveLoad
+        m_MethodName: OpenSettings
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -12691,6 +12712,7 @@ MonoBehaviour:
   dialogueView: {fileID: 1262929994}
   observationView: {fileID: 81822613}
   presentation: {fileID: 259248063}
+  audioService: {fileID: 310615633}
 --- !u!114 &2061971455
 MonoBehaviour:
   m_ObjectHideFlags: 0
