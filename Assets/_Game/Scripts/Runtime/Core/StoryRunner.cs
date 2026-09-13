@@ -579,6 +579,9 @@ namespace BaiguVN
                     portraitId =
                         saved.visuals.portraitId,
 
+                    portraitSlot =
+                        saved.visuals.portraitSlot,
+
                     bgmId =
                         saved.visuals.bgmId
                 }

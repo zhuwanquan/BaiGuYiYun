@@ -29,20 +29,10 @@ namespace BaiguVN
 
         private void Awake()
         {
-            // 游戏启动时隐藏空的角色槽
-            if (slots != null)
-            {
-                foreach (Image slot in slots)
-                {
-                    if (slot == null)
-                        continue;
+            // 启动时隐藏所有空角色槽
+            HideAllCharacters();
 
-                    slot.sprite = null;
-                    slot.enabled = false;
-                }
-            }
-
-            // 没有 CG 时隐藏 CGImage
+            // 启动时隐藏 CG
             if (cgImage != null)
             {
                 cgImage.sprite = null;
@@ -57,12 +47,16 @@ namespace BaiguVN
         public void ApplyBackground(string id)
         {
             if (string.IsNullOrEmpty(id))
+            {
                 return;
+            }
 
             if (background == null)
+            {
                 return;
+            }
 
-            // "-" 表示清除
+            // "-" = 清除背景
             if (id == "-")
             {
                 background.sprite = null;
@@ -87,9 +81,6 @@ namespace BaiguVN
 
         // =========================================================
         // 立绘
-        //
-        // 目前先统一显示到中间槽 slot 1。
-        // 后面再扩展左 / 中 / 右多人同屏。
         // =========================================================
 
         public void ApplyPortrait(
@@ -97,8 +88,11 @@ namespace BaiguVN
             int slot)
         {
             if (string.IsNullOrEmpty(id))
+            {
                 return;
+            }
 
+            // "-" = 清除全部人物
             if (id == "-")
             {
                 HideAllCharacters();
@@ -116,27 +110,75 @@ namespace BaiguVN
                 return;
             }
 
+            // 合法槽位：
+            // 0 = 左
+            // 1 = 中
+            // 2 = 右
             if (slot < 0 || slot > 2)
             {
                 Debug.LogWarning(
-                    $"立绘槽位无效：{slot}，自动使用中间槽。"
+                    $"立绘槽位无效：{slot}，自动改用中间槽。"
                 );
 
                 slot = 1;
             }
 
-            // 当前阶段仍然一次只显示一个主立绘
+            // 当前版本一次只显示一个人物
             HideAllCharacters();
 
-            ShowCharacter(slot, sprite);
+            ShowCharacter(
+                slot,
+                sprite
+            );
         }
+
+        // =========================================================
+        // 显示指定槽位人物
+        // =========================================================
+
+        public void ShowCharacter(
+            int slot,
+            Sprite sprite)
+        {
+            if (slots == null)
+            {
+                return;
+            }
+
+            if (slot < 0 ||
+                slot >= slots.Length)
+            {
+                return;
+            }
+
+            if (slots[slot] == null)
+            {
+                return;
+            }
+
+            slots[slot].sprite = sprite;
+            slots[slot].enabled =
+                sprite != null;
+        }
+
+        // =========================================================
+        // 隐藏指定槽位人物
+        // =========================================================
 
         public void HideCharacter(int slot)
         {
-            if (slots == null ||
-                slot < 0 ||
-                slot >= slots.Length ||
-                slots[slot] == null)
+            if (slots == null)
+            {
+                return;
+            }
+
+            if (slot < 0 ||
+                slot >= slots.Length)
+            {
+                return;
+            }
+
+            if (slots[slot] == null)
             {
                 return;
             }
@@ -145,10 +187,16 @@ namespace BaiguVN
             slots[slot].enabled = false;
         }
 
+        // =========================================================
+        // 隐藏所有人物
+        // =========================================================
+
         public void HideAllCharacters()
         {
             if (slots == null)
+            {
                 return;
+            }
 
             for (int i = 0; i < slots.Length; i++)
             {
@@ -163,30 +211,37 @@ namespace BaiguVN
         public void ShowCG(Sprite sprite)
         {
             if (cgImage == null)
+            {
                 return;
+            }
 
             cgImage.sprite = sprite;
-            cgImage.enabled = sprite != null;
+            cgImage.enabled =
+                sprite != null;
         }
 
         public void HideCG()
         {
             if (cgImage == null)
+            {
                 return;
+            }
 
             cgImage.sprite = null;
             cgImage.enabled = false;
         }
 
         // =========================================================
-        // 读档恢复画面
+        // 读档恢复视觉状态
         // =========================================================
 
         public void ApplySnapshot(
             VisualSnapshot snapshot)
         {
             if (snapshot == null)
+            {
                 return;
+            }
 
             if (!string.IsNullOrEmpty(
                 snapshot.backgroundId))
@@ -211,7 +266,7 @@ namespace BaiguVN
         }
 
         // =========================================================
-        // Sprite 查找
+        // 根据字符串 ID 找 Sprite
         // =========================================================
 
         private Sprite FindSprite(
@@ -219,7 +274,9 @@ namespace BaiguVN
             string id)
         {
             if (entries == null)
+            {
                 return null;
+            }
 
             foreach (VNSpriteEntry entry in entries)
             {

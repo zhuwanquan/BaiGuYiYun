@@ -39,6 +39,7 @@
       "speaker": "孙悟空",
       "text": "这一路只有空山，南面倒有熟桃，我去摘些。",
       "portraitId": "wukong_test",
+      "portraitSlot": 1,
       "next": "a01_011"
     },
     {
