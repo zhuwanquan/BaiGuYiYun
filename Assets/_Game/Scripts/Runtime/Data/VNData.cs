@@ -30,6 +30,7 @@ namespace BaiguVN
 
         public string bgmId;
         public string seId;
+        public string ambienceId;
 
         public string noteId;
         public string completeChapter;
@@ -60,6 +61,7 @@ namespace BaiguVN
         public string portraitId;
         public int portraitSlot = 1;
         public string bgmId;
+        public string ambienceId;
     }
 
     [Serializable]

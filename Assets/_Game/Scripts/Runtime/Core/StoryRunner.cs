@@ -115,6 +115,7 @@ namespace BaiguVN
             if (audioService != null)
             {
                 audioService.StopBgm();
+                audioService.StopAmbience();
             }
 
             // 创建全新的剧情状态
@@ -360,6 +361,19 @@ namespace BaiguVN
 
                 state.visuals.bgmId =
                     node.bgmId;
+            }
+
+            // 环境音
+            if (audioService != null &&
+                !string.IsNullOrEmpty(
+                    node.ambienceId))
+            {
+                audioService.ApplyAmbience(
+                    node.ambienceId
+                );
+
+                state.visuals.ambienceId =
+                    node.ambienceId;
             }
 
             // 一次性剧情音效
@@ -628,7 +642,10 @@ namespace BaiguVN
                         saved.visuals.portraitSlot,
 
                     bgmId =
-                        saved.visuals.bgmId
+                        saved.visuals.bgmId,
+
+                    ambienceId =
+                        saved.visuals.ambienceId
                 }
                 : new VisualSnapshot();
 
@@ -670,6 +687,15 @@ namespace BaiguVN
             {
                 audioService.ApplyBgm(
                     state.visuals.bgmId
+                );
+            }
+
+            if (audioService != null &&
+                !string.IsNullOrEmpty(
+                    state.visuals.ambienceId))
+            {
+                audioService.ApplyAmbience(
+                    state.visuals.ambienceId
                 );
             }
 

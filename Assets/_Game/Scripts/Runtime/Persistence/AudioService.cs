@@ -15,12 +15,20 @@ namespace BaiguVN
         [Header("Audio Sources")]
         public AudioSource bgmSource;
         public AudioSource seSource;
+        public AudioSource ambienceSource;
 
         [Header("BGM Resources")]
         public VNAudioEntry[] bgmClips;
 
         [Header("SE Resources")]
         public VNAudioEntry[] seClips;
+
+        [Header("Ambience Resources")]
+        public VNAudioEntry[] ambienceClips;
+
+        // =========================================================
+        // Volume
+        // =========================================================
 
         public void SetBgmVolume(float value)
         {
@@ -33,12 +41,24 @@ namespace BaiguVN
 
         public void SetSeVolume(float value)
         {
+            float volume =
+                Mathf.Clamp01(value);
+
             if (seSource != null)
             {
-                seSource.volume =
-                    Mathf.Clamp01(value);
+                seSource.volume = volume;
+            }
+
+            // 环境音暂时跟随 SE 音量
+            if (ambienceSource != null)
+            {
+                ambienceSource.volume = volume;
             }
         }
+
+        // =========================================================
+        // BGM
+        // =========================================================
 
         public void ApplyBgm(string id)
         {
@@ -47,7 +67,6 @@ namespace BaiguVN
                 return;
             }
 
-            // "-" 表示停止当前 BGM
             if (id == "-")
             {
                 StopBgm();
@@ -76,7 +95,6 @@ namespace BaiguVN
                 return;
             }
 
-            // 同一首正在播放时不要重新从头播放
             if (bgmSource.clip == clip &&
                 bgmSource.isPlaying)
             {
@@ -98,6 +116,10 @@ namespace BaiguVN
             bgmSource.Stop();
             bgmSource.clip = null;
         }
+
+        // =========================================================
+        // SE
+        // =========================================================
 
         public void PlaySe(string id)
         {
@@ -131,6 +153,74 @@ namespace BaiguVN
             seSource.PlayOneShot(clip);
         }
 
+        // =========================================================
+        // Ambience
+        // =========================================================
+
+        public void ApplyAmbience(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return;
+            }
+
+            if (id == "-")
+            {
+                StopAmbience();
+                return;
+            }
+
+            AudioClip clip =
+                FindClip(ambienceClips, id);
+
+            if (clip == null)
+            {
+                Debug.LogWarning(
+                    $"找不到环境音资源：{id}"
+                );
+                return;
+            }
+
+            PlayAmbience(clip);
+        }
+
+        public void PlayAmbience(
+            AudioClip clip)
+        {
+            if (ambienceSource == null ||
+                clip == null)
+            {
+                return;
+            }
+
+            // 同一个环境音已经在播放时，
+            // 不重新从头开始
+            if (ambienceSource.clip == clip &&
+                ambienceSource.isPlaying)
+            {
+                return;
+            }
+
+            ambienceSource.clip = clip;
+            ambienceSource.loop = true;
+            ambienceSource.Play();
+        }
+
+        public void StopAmbience()
+        {
+            if (ambienceSource == null)
+            {
+                return;
+            }
+
+            ambienceSource.Stop();
+            ambienceSource.clip = null;
+        }
+
+        // =========================================================
+        // Resource lookup
+        // =========================================================
+
         private AudioClip FindClip(
             VNAudioEntry[] entries,
             string id)
@@ -140,7 +230,8 @@ namespace BaiguVN
                 return null;
             }
 
-            foreach (VNAudioEntry entry in entries)
+            foreach (VNAudioEntry entry
+                     in entries)
             {
                 if (entry != null &&
                     entry.id == id)
@@ -152,20 +243,35 @@ namespace BaiguVN
             return null;
         }
 
+        // =========================================================
+        // Application Pause
+        // =========================================================
+
         public void OnAppPause(bool paused)
         {
-            if (bgmSource == null)
-            {
-                return;
-            }
-
             if (paused)
             {
-                bgmSource.Pause();
+                if (bgmSource != null)
+                {
+                    bgmSource.Pause();
+                }
+
+                if (ambienceSource != null)
+                {
+                    ambienceSource.Pause();
+                }
             }
             else
             {
-                bgmSource.UnPause();
+                if (bgmSource != null)
+                {
+                    bgmSource.UnPause();
+                }
+
+                if (ambienceSource != null)
+                {
+                    ambienceSource.UnPause();
+                }
             }
         }
 

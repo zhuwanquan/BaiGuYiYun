@@ -40,10 +40,20 @@ namespace BaiguVN
 
             copy.visuals = new VisualSnapshot
             {
-                backgroundId = visuals.backgroundId,
-                portraitId = visuals.portraitId,
-                portraitSlot = visuals.portraitSlot,
-                bgmId = visuals.bgmId
+                backgroundId =
+                    visuals.backgroundId,
+
+                portraitId =
+                    visuals.portraitId,
+
+                portraitSlot =
+                    visuals.portraitSlot,
+
+                bgmId =
+                    visuals.bgmId,
+
+                ambienceId =
+                    visuals.ambienceId
             };
 
             copy.completedChapters = new List<string>(completedChapters);
@@ -79,7 +89,8 @@ namespace BaiguVN
                 backgroundId = visuals.backgroundId,
                 portraitId = visuals.portraitId,
                 portraitSlot = visuals.portraitSlot,
-                bgmId = visuals.bgmId
+                bgmId = visuals.bgmId,
+                ambienceId = visuals.ambienceId
             };
 
             snapshot.completedChapters =
