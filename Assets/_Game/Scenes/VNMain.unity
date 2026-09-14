@@ -1496,10 +1496,12 @@ MonoBehaviour:
     sprite: {fileID: -7441660838408181414, guid: 18d11c998275b464ebf5c86f43820bec, type: 3}
   - id: wukong_smile
     sprite: {fileID: -7479031182607403508, guid: f6a650e4f71650e4c8b48987dd1f5ccd, type: 3}
-  - id: tangseng_neutral
+  - id: tangseng_smile
     sprite: {fileID: 5672687030486897652, guid: 51eb85f79909fb34a983e4544cdee705, type: 3}
   - id: tangseng_neutral
     sprite: {fileID: 6131821140394784414, guid: 57c53abe354f8c842a73f31887b5135b, type: 3}
+  activePortraitColor: {r: 1, g: 1, b: 1, a: 1}
+  inactivePortraitColor: {r: 0.55, g: 0.55, b: 0.55, a: 1}
 --- !u!114 &259248064
 MonoBehaviour:
   m_ObjectHideFlags: 0

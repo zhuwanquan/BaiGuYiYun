@@ -104,6 +104,9 @@ namespace BaiguVN
 
                     rightPortraitId =
                         visuals.rightPortraitId,
+                    
+                    focusSlot =
+                        visuals.focusSlot,
 
                     bgmId =
                         visuals.bgmId,

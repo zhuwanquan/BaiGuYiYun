@@ -45,6 +45,16 @@
       "portraitSlot": 0,
       "focusSlot": 0,
       "seId": "se_step_gravel",
+      "next": "a01_010_smile"
+    },
+    {
+      "id": "a01_010_smile",
+      "type": "line",
+      "speaker": "孙悟空",
+      "text": "嘿嘿，师父放心，俺老孙去去便回。",
+      "portraitId": "wukong_smile",
+      "portraitSlot": 0,
+      "focusSlot": 0,
       "next": "a01_011"
     },
     {
@@ -53,6 +63,16 @@
       "speaker": "唐僧",
       "text": "你早去早回。",
       "portraitId": "tangseng_neutral",
+      "portraitSlot": 2,
+      "focusSlot": 2,
+      "next": "a01_011_smile"
+    },
+    {
+      "id": "a01_011_smile",
+      "type": "line",
+      "speaker": "唐僧",
+      "text": "路上仔细些，莫要惹出事端。",
+      "portraitId": "tangseng_smile",
       "portraitSlot": 2,
       "focusSlot": 2,
       "next": "test_end"
