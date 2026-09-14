@@ -280,5 +280,53 @@ namespace BaiguVN
         {
             OnAppPause(pauseStatus);
         }
+
+        private void Awake()
+        {
+            if (bgmSource == null)
+            {
+                Debug.LogError(
+                    "AudioService：Bgm Source 没有绑定。"
+                );
+            }
+
+            if (seSource == null)
+            {
+                Debug.LogError(
+                    "AudioService：Se Source 没有绑定。"
+                );
+            }
+
+            if (ambienceSource == null)
+            {
+                Debug.LogError(
+                    "AudioService：Ambience Source 没有绑定。"
+                );
+            }
+
+            if (bgmSource == ambienceSource)
+            {
+                Debug.LogError(
+                    "AudioService：BGM Source 和 Ambience Source " +
+                    "错误地引用了同一个 AudioSource！"
+                );
+            }
+
+            if (bgmSource == seSource)
+            {
+                Debug.LogError(
+                    "AudioService：BGM Source 和 SE Source " +
+                    "错误地引用了同一个 AudioSource！"
+                );
+            }
+
+            if (seSource == ambienceSource)
+            {
+                Debug.LogError(
+                    "AudioService：SE Source 和 Ambience Source " +
+                    "错误地引用了同一个 AudioSource！"
+                );
+            }
+        }
     }
 }
