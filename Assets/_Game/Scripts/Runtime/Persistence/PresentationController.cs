@@ -27,6 +27,18 @@ namespace BaiguVN
         [Header("Portrait Resources")]
         public VNSpriteEntry[] portraits;
 
+        [Header("Portrait Focus")]
+        public Color activePortraitColor =
+            Color.white;
+
+        public Color inactivePortraitColor =
+            new Color(
+                0.55f,
+                0.55f,
+                0.55f,
+                1f
+            );
+
         private void Awake()
         {
             // 启动时隐藏所有空角色槽
@@ -92,10 +104,15 @@ namespace BaiguVN
                 return;
             }
 
-            // "-" = 清除全部人物
             if (id == "-")
             {
                 HideAllCharacters();
+                return;
+            }
+
+            if (id == "@clear")
+            {
+                HideCharacter(slot);
                 return;
             }
 
@@ -110,22 +127,12 @@ namespace BaiguVN
                 return;
             }
 
-            // 合法槽位：
-            // 0 = 左
-            // 1 = 中
-            // 2 = 右
             if (slot < 0 || slot > 2)
             {
-                Debug.LogWarning(
-                    $"立绘槽位无效：{slot}，自动改用中间槽。"
-                );
-
                 slot = 1;
             }
 
-            // 当前版本一次只显示一个人物
-            HideAllCharacters();
-
+            // 不清除另外两个槽位
             ShowCharacter(
                 slot,
                 sprite
@@ -185,6 +192,10 @@ namespace BaiguVN
 
             slots[slot].sprite = null;
             slots[slot].enabled = false;
+
+            // 清除旧的高亮状态
+            slots[slot].color =
+                activePortraitColor;
         }
 
         // =========================================================
@@ -268,6 +279,7 @@ namespace BaiguVN
                 return;
             }
 
+            // 背景
             if (!string.IsNullOrEmpty(
                 snapshot.backgroundId))
             {
@@ -276,18 +288,32 @@ namespace BaiguVN
                 );
             }
 
-            if (!string.IsNullOrEmpty(
-                snapshot.portraitId))
-            {
-                ApplyPortrait(
-                    snapshot.portraitId,
-                    snapshot.portraitSlot
-                );
-            }
-            else
-            {
-                HideAllCharacters();
-            }
+            // 读档时先清掉当前所有人物，
+            // 防止上一局残留
+            HideAllCharacters();
+
+            // 左
+            RestorePortraitSlot(
+                0,
+                snapshot.leftPortraitId
+            );
+
+            // 中
+            RestorePortraitSlot(
+                1,
+                snapshot.centerPortraitId
+            );
+
+            // 右
+            RestorePortraitSlot(
+                2,
+                snapshot.rightPortraitId
+            );
+
+            // 恢复当前说话角色的亮暗状态
+            ApplyFocus(
+                snapshot.focusSlot
+            );
         }
 
         // =========================================================
@@ -313,6 +339,83 @@ namespace BaiguVN
             }
 
             return null;
+        }
+
+        private void RestorePortraitSlot(
+            int slot,
+            string portraitId)
+        {
+            if (string.IsNullOrEmpty(
+                portraitId))
+            {
+                return;
+            }
+
+            Sprite sprite =
+                FindSprite(
+                    portraits,
+                    portraitId
+                );
+
+            if (sprite == null)
+            {
+                Debug.LogWarning(
+                    $"读档时找不到立绘资源：{portraitId}"
+                );
+                return;
+            }
+
+            ShowCharacter(
+                slot,
+                sprite
+            );
+        }
+
+        public void ApplyFocus(int focusSlot)
+        {
+            if (slots == null)
+            {
+                return;
+            }
+
+            // -1 = 所有人恢复正常亮度
+            if (focusSlot < 0 ||
+                focusSlot >= slots.Length)
+            {
+                for (int i = 0;
+                    i < slots.Length;
+                    i++)
+                {
+                    if (slots[i] != null)
+                    {
+                        slots[i].color =
+                            activePortraitColor;
+                    }
+                }
+
+                return;
+            }
+
+            for (int i = 0;
+                i < slots.Length;
+                i++)
+            {
+                if (slots[i] == null)
+                {
+                    continue;
+                }
+
+                if (i == focusSlot)
+                {
+                    slots[i].color =
+                        activePortraitColor;
+                }
+                else
+                {
+                    slots[i].color =
+                        inactivePortraitColor;
+                }
+            }
         }
     }
 }

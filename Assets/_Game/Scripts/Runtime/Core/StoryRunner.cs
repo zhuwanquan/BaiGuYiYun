@@ -337,18 +337,28 @@ namespace BaiguVN
 
             // 立绘
             if (presentation != null &&
-                !string.IsNullOrEmpty(node.portraitId))
+                !string.IsNullOrEmpty(
+                    node.portraitId))
             {
                 presentation.ApplyPortrait(
                     node.portraitId,
                     node.portraitSlot
                 );
 
-                state.visuals.portraitId =
-                    node.portraitId;
+                ApplyPortraitToState(
+                    node.portraitId,
+                    node.portraitSlot
+                );
+            }
 
-                state.visuals.portraitSlot =
-                    node.portraitSlot;
+            if (presentation != null)
+            {
+                presentation.ApplyFocus(
+                    node.focusSlot
+                );
+
+                state.visuals.focusSlot =
+                    node.focusSlot;
             }
 
             // BGM
@@ -635,11 +645,17 @@ namespace BaiguVN
                     backgroundId =
                         saved.visuals.backgroundId,
 
-                    portraitId =
-                        saved.visuals.portraitId,
+                    leftPortraitId =
+                        saved.visuals.leftPortraitId,
 
-                    portraitSlot =
-                        saved.visuals.portraitSlot,
+                    centerPortraitId =
+                        saved.visuals.centerPortraitId,
+
+                    rightPortraitId =
+                        saved.visuals.rightPortraitId,
+                    
+                    focusSlot =
+                        saved.visuals.focusSlot,
 
                     bgmId =
                         saved.visuals.bgmId,
@@ -778,6 +794,57 @@ namespace BaiguVN
             return new List<string>(
                 state.completedChapters
             );
+        }
+
+        private void ApplyPortraitToState(
+            string portraitId,
+            int slot)
+        {
+            if (state == null ||
+                state.visuals == null)
+            {
+                return;
+            }
+
+            // "-" = 清空全部槽位
+            if (portraitId == "-")
+            {
+                state.visuals.leftPortraitId = "";
+                state.visuals.centerPortraitId = "";
+                state.visuals.rightPortraitId = "";
+
+                return;
+            }
+
+            // 防止错误槽位
+            if (slot < 0 || slot > 2)
+            {
+                slot = 1;
+            }
+
+            // "@clear" = 清空指定槽位
+            string value =
+                portraitId == "@clear"
+                ? ""
+                : portraitId;
+
+            switch (slot)
+            {
+                case 0:
+                    state.visuals.leftPortraitId =
+                        value;
+                    break;
+
+                case 1:
+                    state.visuals.centerPortraitId =
+                        value;
+                    break;
+
+                case 2:
+                    state.visuals.rightPortraitId =
+                        value;
+                    break;
+            }
         }
     }
 }

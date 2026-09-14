@@ -43,11 +43,17 @@ namespace BaiguVN
                 backgroundId =
                     visuals.backgroundId,
 
-                portraitId =
-                    visuals.portraitId,
+                leftPortraitId =
+                    visuals.leftPortraitId,
 
-                portraitSlot =
-                    visuals.portraitSlot,
+                centerPortraitId =
+                    visuals.centerPortraitId,
+
+                rightPortraitId =
+                    visuals.rightPortraitId,
+                
+                focusSlot =
+                    visuals.focusSlot,
 
                 bgmId =
                     visuals.bgmId,
@@ -84,14 +90,27 @@ namespace BaiguVN
                 });
             }
 
-            snapshot.visuals = new VisualSnapshot
-            {
-                backgroundId = visuals.backgroundId,
-                portraitId = visuals.portraitId,
-                portraitSlot = visuals.portraitSlot,
-                bgmId = visuals.bgmId,
-                ambienceId = visuals.ambienceId
-            };
+            snapshot.visuals =
+                new VisualSnapshot
+                {
+                    backgroundId =
+                        visuals.backgroundId,
+
+                    leftPortraitId =
+                        visuals.leftPortraitId,
+
+                    centerPortraitId =
+                        visuals.centerPortraitId,
+
+                    rightPortraitId =
+                        visuals.rightPortraitId,
+
+                    bgmId =
+                        visuals.bgmId,
+
+                    ambienceId =
+                        visuals.ambienceId
+                };
 
             snapshot.completedChapters =
                 new List<string>(completedChapters);
