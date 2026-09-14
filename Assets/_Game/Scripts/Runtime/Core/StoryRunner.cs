@@ -146,6 +146,14 @@ namespace BaiguVN
                 return;
             }
 
+            // 人物演出期间不接受推进输入。
+            // Busy 期间的点击直接丢弃，不排队。
+            if (presentation != null &&
+                presentation.IsBusy)
+            {
+                return;
+            }
+
             if (repository == null || state == null)
             {
                 return;
@@ -195,6 +203,14 @@ namespace BaiguVN
 
         public void OpenObserve(string objectId)
         {
+
+            // 演出期间不接受观察对象输入。
+            if (presentation != null &&
+                presentation.IsBusy)
+            {
+                return;
+            }
+
             if (repository == null || state == null)
             {
                 return;
@@ -234,6 +250,14 @@ namespace BaiguVN
 
         public void ResumeObserve()
         {
+
+            // 演出期间不接受观察继续输入。
+            if (presentation != null &&
+                presentation.IsBusy)
+            {
+                return;
+            }
+
             if (repository == null || state == null)
             {
                 return;

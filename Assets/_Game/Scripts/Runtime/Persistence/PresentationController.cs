@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 
 namespace BaiguVN
 {
@@ -30,6 +31,14 @@ namespace BaiguVN
         [Header("Portrait Focus")]
         public Color activePortraitColor =
             Color.white;
+
+        [Header("Character Fade")]
+        [SerializeField, Min(0f)]
+        private float characterFadeSeconds = 0.25f;
+
+        public bool IsBusy { get; private set; }
+
+        private int activeCharacterFadeCount;
 
         public Color inactivePortraitColor =
             new Color(
@@ -106,13 +115,13 @@ namespace BaiguVN
 
             if (id == "-")
             {
-                HideAllCharacters();
+                HideAllCharactersForStory();
                 return;
             }
 
             if (id == "@clear")
             {
-                HideCharacter(slot);
+                HideCharacterForStory(slot);
                 return;
             }
 
@@ -132,8 +141,10 @@ namespace BaiguVN
                 slot = 1;
             }
 
-            // 不清除另外两个槽位
-            ShowCharacter(
+            // 正常剧情路径：
+            // 空槽第一次登场时淡入；
+            // 已有角色时直接切换 Sprite。
+            ShowCharacterForStory(
                 slot,
                 sprite
             );
@@ -168,6 +179,57 @@ namespace BaiguVN
                 sprite != null;
         }
 
+        private void ShowCharacterForStory(
+            int slot,
+            Sprite sprite)
+        {
+            if (slots == null)
+            {
+                return;
+            }
+
+            if (slot < 0 ||
+                slot >= slots.Length)
+            {
+                return;
+            }
+
+            Image image = slots[slot];
+
+            if (image == null)
+            {
+                return;
+            }
+
+            if (sprite == null)
+            {
+                return;
+            }
+
+            // 槽位之前是否为空。
+            // 只有真正的“第一次登场”才播放淡入。
+            bool wasEmpty =
+                !image.enabled ||
+                image.sprite == null;
+
+            // 先设置正确立绘
+            image.sprite = sprite;
+            image.enabled = true;
+
+            // 已经有人物时，仅代表表情/立绘替换。
+            // 直接换 Sprite，不播放淡入。
+            if (!wasEmpty)
+            {
+                return;
+            }
+
+            // 第一次登场：从透明开始
+            SetImageAlpha(image, 0f);
+
+            StartCoroutine(
+                FadeCharacterIn(image));
+        }
+
         // =========================================================
         // 隐藏指定槽位人物
         // =========================================================
@@ -198,6 +260,40 @@ namespace BaiguVN
                 activePortraitColor;
         }
 
+        private void HideCharacterForStory(int slot)
+        {
+            if (slots == null)
+            {
+                return;
+            }
+
+            if (slot < 0 ||
+                slot >= slots.Length)
+            {
+                return;
+            }
+
+            Image image = slots[slot];
+
+            if (image == null)
+            {
+                return;
+            }
+
+            // 本来就是空槽，不需要演出
+            if (!image.enabled ||
+                image.sprite == null)
+            {
+                HideCharacter(slot);
+                return;
+            }
+
+            StartCoroutine(
+                FadeCharacterOut(
+                    slot,
+                    image));
+        }
+
         // =========================================================
         // 隐藏所有人物
         // =========================================================
@@ -215,8 +311,54 @@ namespace BaiguVN
             }
         }
 
+        private void HideAllCharactersForStory()
+        {
+            if (slots == null)
+            {
+                return;
+            }
+
+            bool foundCharacter = false;
+
+            for (int i = 0; i < slots.Length; i++)
+            {
+                Image image = slots[i];
+
+                if (image == null)
+                {
+                    continue;
+                }
+
+                if (!image.enabled ||
+                    image.sprite == null)
+                {
+                    continue;
+                }
+
+                foundCharacter = true;
+
+                StartCoroutine(
+                    FadeCharacterOut(
+                        i,
+                        image));
+            }
+
+            // 如果本来就没人，确保空槽保持干净状态
+            if (!foundCharacter)
+            {
+                HideAllCharacters();
+            }
+        }
+
         public void ResetForNewGame()
         {
+            // 强制终止当前所有视觉演出。
+            // 新游戏恢复最终干净状态，不播放退场动画。
+            StopAllCoroutines();
+
+            activeCharacterFadeCount = 0;
+            IsBusy = false;
+
             // 清除背景
             if (background != null)
             {
@@ -279,6 +421,14 @@ namespace BaiguVN
                 return;
             }
 
+            // 读档恢复的是最终视觉状态。
+            // 先终止任何仍在运行的人物演出，避免旧 Coroutine
+            // 在快照恢复以后继续修改角色 Alpha。
+            StopAllCoroutines();
+
+            activeCharacterFadeCount = 0;
+            IsBusy = false;
+            
             // 背景
             if (!string.IsNullOrEmpty(
                 snapshot.backgroundId))
@@ -388,8 +538,9 @@ namespace BaiguVN
                 {
                     if (slots[i] != null)
                     {
-                        slots[i].color =
-                            activePortraitColor;
+                        SetImageRgbKeepAlpha(
+                            slots[i],
+                            activePortraitColor);
                     }
                 }
 
@@ -407,15 +558,150 @@ namespace BaiguVN
 
                 if (i == focusSlot)
                 {
-                    slots[i].color =
-                        activePortraitColor;
+                    SetImageRgbKeepAlpha(
+                        slots[i],
+                        activePortraitColor);
                 }
                 else
                 {
-                    slots[i].color =
-                        inactivePortraitColor;
+                    SetImageRgbKeepAlpha(
+                        slots[i],
+                        inactivePortraitColor);
                 }
             }
         }
+
+        private static void SetImageAlpha(Image image, float alpha)
+        {
+            if (image == null)
+                return;
+
+            Color color = image.color;
+            color.a = Mathf.Clamp01(alpha);
+            image.color = color;
+        }
+
+        private static void SetImageRgbKeepAlpha(
+            Image image,
+            Color targetColor)
+        {
+            if (image == null)
+                return;
+
+            Color color = targetColor;
+            color.a = image.color.a;
+            image.color = color;
+        }
+
+        private IEnumerator FadeImageAlpha(
+            Image image,
+            float targetAlpha)
+        {
+            if (image == null)
+            {
+                yield break;
+            }
+
+            float startAlpha = image.color.a;
+            float duration = Mathf.Max(0f, characterFadeSeconds);
+
+            // 时长为 0 时直接得到最终状态
+            if (duration <= 0f)
+            {
+                SetImageAlpha(image, targetAlpha);
+                yield break;
+            }
+
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+
+                float t = Mathf.Clamp01(
+                    elapsed / duration);
+
+                float alpha = Mathf.Lerp(
+                    startAlpha,
+                    targetAlpha,
+                    t);
+
+                SetImageAlpha(image, alpha);
+
+                yield return null;
+            }
+
+            // 防止浮点误差，最后强制落到准确目标值
+            SetImageAlpha(image, targetAlpha);
+        }
+
+        private void BeginCharacterFade()
+        {
+            activeCharacterFadeCount++;
+            IsBusy = true;
+        }
+
+        private void EndCharacterFade()
+        {
+            activeCharacterFadeCount =
+                Mathf.Max(0, activeCharacterFadeCount - 1);
+
+            IsBusy = activeCharacterFadeCount > 0;
+        }
+
+        private IEnumerator FadeCharacterIn(
+            Image image)
+        {
+            if (image == null)
+            {
+                yield break;
+            }
+
+            BeginCharacterFade();
+
+            yield return FadeImageAlpha(
+                image,
+                1f);
+
+            // 最终状态强制完整显示
+            SetImageAlpha(image, 1f);
+
+            EndCharacterFade();
+        }
+
+        private IEnumerator FadeCharacterOut(
+            int slot,
+            Image image)
+        {
+            if (image == null)
+            {
+                yield break;
+            }
+
+            BeginCharacterFade();
+
+            yield return FadeImageAlpha(
+                image,
+                0f);
+
+            // 淡出结束后才真正清掉角色
+            if (slots != null &&
+                slot >= 0 &&
+                slot < slots.Length &&
+                slots[slot] == image)
+            {
+                image.sprite = null;
+                image.enabled = false;
+
+                // 为下一次角色登场准备干净状态
+                SetImageAlpha(image, 1f);
+
+                SetImageRgbKeepAlpha(
+                    image,
+                    activePortraitColor);
+            }
+
+            EndCharacterFade();
+}
     }
 }

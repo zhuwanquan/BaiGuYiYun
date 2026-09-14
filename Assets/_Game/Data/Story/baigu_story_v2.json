@@ -75,6 +75,16 @@
       "portraitId": "tangseng_smile",
       "portraitSlot": 2,
       "focusSlot": 2,
+      "next": "a01_clear_wukong"
+    },
+    {
+      "id": "a01_clear_wukong",
+      "type": "line",
+      "speaker": "旁白",
+      "text": "（测试：悟空暂时退出画面。）",
+      "portraitId": "@clear",
+      "portraitSlot": 0,
+      "focusSlot": 2,
       "next": "test_end"
     },
     {

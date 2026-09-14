@@ -1501,6 +1501,7 @@ MonoBehaviour:
   - id: tangseng_neutral
     sprite: {fileID: 6131821140394784414, guid: 57c53abe354f8c842a73f31887b5135b, type: 3}
   activePortraitColor: {r: 1, g: 1, b: 1, a: 1}
+  characterFadeSeconds: 5
   inactivePortraitColor: {r: 0.55, g: 0.55, b: 0.55, a: 1}
 --- !u!114 &259248064
 MonoBehaviour:
