@@ -28,6 +28,9 @@ namespace BaiguVN
         [Header("Portrait Resources")]
         public VNSpriteEntry[] portraits;
 
+        [Header("CG Resources")]
+        public VNSpriteEntry[] cgs;
+
         [Header("Portrait Focus")]
         public Color activePortraitColor =
             Color.white;
@@ -439,6 +442,90 @@ namespace BaiguVN
             }
         }
 
+
+        // =========================================================
+        // CG
+        // =========================================================
+        public void ApplyCG(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return;
+            }
+
+            // "-" = 关闭当前 CG
+            if (id == "-")
+            {
+                HideCG();
+                return;
+            }
+
+            Sprite sprite =
+                FindSprite(cgs, id);
+
+            if (sprite == null)
+            {
+                Debug.LogWarning(
+                    $"找不到 CG 资源：{id}"
+                );
+
+                return;
+            }
+
+            ShowCG(sprite);
+        }
+
+        public void ApplyCGForStory(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return;
+            }
+
+            // 隐藏 CG
+            if (id == "-")
+            {
+                if (cgImage == null ||
+                    !cgImage.enabled ||
+                    cgImage.sprite == null)
+                {
+                    ApplyCG(id);
+                    return;
+                }
+
+                StartCoroutine(
+                    TransitionCG(id)
+                );
+
+                return;
+            }
+
+            // 显示 CG
+            Sprite targetSprite =
+                FindSprite(cgs, id);
+
+            if (targetSprite == null)
+            {
+                Debug.LogWarning(
+                    $"找不到 CG 资源：{id}"
+                );
+
+                return;
+            }
+
+            // 已经是同一张 CG 时，不重复演出。
+            if (cgImage != null &&
+                cgImage.enabled &&
+                cgImage.sprite == targetSprite)
+            {
+                return;
+            }
+
+            StartCoroutine(
+                TransitionCG(id)
+            );
+        }
+
         // =========================================================
         // CG
         // =========================================================
@@ -503,6 +590,20 @@ namespace BaiguVN
                 ApplyBackground(
                     snapshot.backgroundId
                 );
+            }
+
+
+            // CG：读档只恢复最终状态，不播放演出。
+            if (!string.IsNullOrEmpty(
+                snapshot.cgId))
+            {
+                ApplyCG(
+                    snapshot.cgId
+                );
+            }
+            else
+            {
+                HideCG();
             }
 
             // 读档时先清掉当前所有人物，
@@ -804,6 +905,44 @@ namespace BaiguVN
 
             fadeOverlay.raycastTarget =
                 false;
+
+            EndPresentationOperation();
+        }
+
+        private IEnumerator TransitionCG(string id)
+        {
+            BeginPresentationOperation();
+
+            // 没有黑幕对象时降级成即时切换。
+            if (fadeOverlay == null)
+            {
+                ApplyCG(id);
+
+                EndPresentationOperation();
+                yield break;
+            }
+
+            fadeOverlay.raycastTarget = false;
+
+            // 先渐黑。
+            yield return FadeOverlayAlpha(1f);
+
+            // 完全黑时改变 CG。
+            ApplyCG(id);
+
+            // 再渐亮。
+            yield return FadeOverlayAlpha(0f);
+
+            // 最终兜底，确保黑幕完全透明。
+            Color finalColor =
+                fadeOverlay.color;
+
+            finalColor.a = 0f;
+
+            fadeOverlay.color =
+                finalColor;
+
+            fadeOverlay.raycastTarget = false;
 
             EndPresentationOperation();
         }

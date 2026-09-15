@@ -25,6 +25,8 @@ namespace BaiguVN
         public string resume;
 
         public string backgroundId;
+        public string cgId;
+
         public string portraitId;
         public int portraitSlot = 1;
 
@@ -61,20 +63,24 @@ namespace BaiguVN
     }
 
     [Serializable]
-public class VisualSnapshot
-{
-    public string backgroundId;
+    public class VisualSnapshot
+    {
+        public string backgroundId;
 
-    // 三个独立立绘槽
-    public string leftPortraitId;
-    public string centerPortraitId;
-    public string rightPortraitId;
+        // 当前显示的 CG。
+        // 空 / null = 当前没有 CG。
+        public string cgId;
 
-    public int focusSlot = -1;
+        // 三个独立立绘槽
+        public string leftPortraitId;
+        public string centerPortraitId;
+        public string rightPortraitId;
 
-    public string bgmId;
-    public string ambienceId;
-}
+        public int focusSlot = -1;
+
+        public string bgmId;
+        public string ambienceId;
+    }
 
     [Serializable]
     public class VNSnapshot

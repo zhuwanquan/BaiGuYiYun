@@ -1504,6 +1504,9 @@ MonoBehaviour:
     sprite: {fileID: 5672687030486897652, guid: 51eb85f79909fb34a983e4544cdee705, type: 3}
   - id: tangseng_neutral
     sprite: {fileID: 6131821140394784414, guid: 57c53abe354f8c842a73f31887b5135b, type: 3}
+  cgs:
+  - id: cg_test
+    sprite: {fileID: 21300000, guid: 338e180f5be41184380c90a72434703b, type: 3}
   activePortraitColor: {r: 1, g: 1, b: 1, a: 1}
   characterFadeSeconds: 0.25
   backgroundFadeSeconds: 0.35
@@ -4769,7 +4772,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &798681125
 RectTransform:
   m_ObjectHideFlags: 0

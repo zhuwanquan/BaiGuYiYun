@@ -103,6 +103,29 @@
       "text": "（测试：森林转入桃林溪边。）",
       "backgroundId": "bg_peach_stream",
       "focusSlot": 2,
+      "next": "test_cg_show"
+    },
+    {
+      "id": "test_cg_show",
+      "type": "line",
+      "speaker": "旁白",
+      "text": "（测试：显示 CG。）",
+      "cgId": "cg_test",
+      "next": "test_cg_hold"
+    },
+    {
+      "id": "test_cg_hold",
+      "type": "line",
+      "speaker": "旁白",
+      "text": "（测试：CG 应继续保持显示。）",
+      "next": "test_cg_hide"
+    },
+    {
+      "id": "test_cg_hide",
+      "type": "line",
+      "speaker": "旁白",
+      "text": "（测试：关闭 CG。）",
+      "cgId": "-",
       "next": "test_end"
     },
     {

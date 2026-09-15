@@ -359,6 +359,20 @@ namespace BaiguVN
                     node.backgroundId;
             }
 
+            // CG
+            if (presentation != null &&
+                !string.IsNullOrEmpty(node.cgId))
+            {
+                presentation.ApplyCGForStory(
+                    node.cgId
+                );
+
+                state.visuals.cgId =
+                    node.cgId == "-"
+                    ? ""
+                    : node.cgId;
+            }
+
             // 立绘
             if (presentation != null &&
                 !string.IsNullOrEmpty(
@@ -668,6 +682,9 @@ namespace BaiguVN
                 {
                     backgroundId =
                         saved.visuals.backgroundId,
+
+                    cgId =
+                        saved.visuals.cgId,
 
                     leftPortraitId =
                         saved.visuals.leftPortraitId,
