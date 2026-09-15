@@ -105,6 +105,11 @@ namespace BaiguVN
     [Serializable]
     public class VNProfile
     {
+        public string magic =
+        "BAIGU_V2_PROFILE";
+
+        public int schemaVersion = 1;
+        
         public List<string> readNodeIds = new List<string>();
         public List<string> completedChapters = new List<string>();
         public List<string> memorials = new List<string>();
