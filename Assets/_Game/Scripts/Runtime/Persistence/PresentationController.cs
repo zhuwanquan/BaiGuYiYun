@@ -35,10 +35,13 @@ namespace BaiguVN
         [Header("Character Fade")]
         [SerializeField, Min(0f)]
         private float characterFadeSeconds = 0.25f;
-
+        
+        [Header("Background Transition")]
+        [SerializeField, Min(0f)]
+        private float backgroundFadeSeconds = 0.35f;
         public bool IsBusy { get; private set; }
 
-        private int activeCharacterFadeCount;
+        private int activePresentationOperationCount;
 
         public Color inactivePortraitColor =
             new Color(
@@ -98,6 +101,60 @@ namespace BaiguVN
 
             background.sprite = sprite;
             background.enabled = true;
+        }
+
+
+        public void ApplyBackgroundForStory(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return;
+            }
+
+            if (background == null)
+            {
+                return;
+            }
+
+            // 清除背景
+            if (id == "-")
+            {
+                // 本来就没有背景，不需要播放转场
+                if (!background.enabled ||
+                    background.sprite == null)
+                {
+                    ApplyBackground(id);
+                    return;
+                }
+
+                StartCoroutine(
+                    TransitionBackground(id));
+
+                return;
+            }
+
+            Sprite targetSprite =
+                FindSprite(backgrounds, id);
+
+            if (targetSprite == null)
+            {
+                Debug.LogWarning(
+                    $"找不到背景资源：{id}"
+                );
+
+                return;
+            }
+
+            // 当前已经是同一张背景，
+            // 不重复播放黑屏转场。
+            if (background.enabled &&
+                background.sprite == targetSprite)
+            {
+                return;
+            }
+
+            StartCoroutine(
+                TransitionBackground(id));
         }
 
         // =========================================================
@@ -356,7 +413,7 @@ namespace BaiguVN
             // 新游戏恢复最终干净状态，不播放退场动画。
             StopAllCoroutines();
 
-            activeCharacterFadeCount = 0;
+            activePresentationOperationCount = 0;
             IsBusy = false;
 
             // 清除背景
@@ -426,8 +483,18 @@ namespace BaiguVN
             // 在快照恢复以后继续修改角色 Alpha。
             StopAllCoroutines();
 
-            activeCharacterFadeCount = 0;
+            activePresentationOperationCount = 0;
             IsBusy = false;
+
+            // 如果读档发生在背景黑屏转场中，
+            // 必须立即恢复为透明遮罩。
+            if (fadeOverlay != null)
+            {
+                Color overlayColor = fadeOverlay.color;
+                overlayColor.a = 0f;
+                fadeOverlay.color = overlayColor;
+                fadeOverlay.raycastTarget = false;
+            }
             
             // 背景
             if (!string.IsNullOrEmpty(
@@ -635,18 +702,129 @@ namespace BaiguVN
             SetImageAlpha(image, targetAlpha);
         }
 
-        private void BeginCharacterFade()
+        private IEnumerator FadeOverlayAlpha(
+            float targetAlpha)
         {
-            activeCharacterFadeCount++;
-            IsBusy = true;
+            if (fadeOverlay == null)
+            {
+                yield break;
+            }
+
+            float startAlpha = fadeOverlay.color.a;
+            float duration = Mathf.Max(
+                0f,
+                backgroundFadeSeconds);
+
+            if (duration <= 0f)
+            {
+                Color instantColor =
+                    fadeOverlay.color;
+
+                instantColor.a =
+                    Mathf.Clamp01(targetAlpha);
+
+                fadeOverlay.color =
+                    instantColor;
+
+                yield break;
+            }
+
+            float elapsed = 0f;
+
+            while (elapsed < duration)
+            {
+                elapsed +=
+                    Time.unscaledDeltaTime;
+
+                float t = Mathf.Clamp01(
+                    elapsed / duration);
+
+                float alpha = Mathf.Lerp(
+                    startAlpha,
+                    targetAlpha,
+                    t);
+
+                Color color =
+                    fadeOverlay.color;
+
+                color.a = alpha;
+
+                fadeOverlay.color =
+                    color;
+
+                yield return null;
+            }
+
+            Color finalColor =
+                fadeOverlay.color;
+
+            finalColor.a =
+                Mathf.Clamp01(targetAlpha);
+
+            fadeOverlay.color =
+                finalColor;
         }
 
-        private void EndCharacterFade()
+        private IEnumerator TransitionBackground(
+            string id)
         {
-            activeCharacterFadeCount =
-                Mathf.Max(0, activeCharacterFadeCount - 1);
+            BeginPresentationOperation();
 
-            IsBusy = activeCharacterFadeCount > 0;
+            // 如果场景没有 FadeOverlay，
+            // 退化为原来的即时背景切换。
+            if (fadeOverlay == null)
+            {
+                ApplyBackground(id);
+
+                EndPresentationOperation();
+                yield break;
+            }
+
+            // FadeOverlay 只负责画面表现，
+            // 不拿它当输入锁。
+            fadeOverlay.raycastTarget = false;
+
+            // 1. 渐黑
+            yield return FadeOverlayAlpha(1f);
+
+            // 2. 完全黑屏时切换真正背景
+            ApplyBackground(id);
+
+            // 3. 渐亮
+            yield return FadeOverlayAlpha(0f);
+
+            // 最终保险
+            Color finalColor =
+                fadeOverlay.color;
+
+            finalColor.a = 0f;
+
+            fadeOverlay.color =
+                finalColor;
+
+            fadeOverlay.raycastTarget =
+                false;
+
+            EndPresentationOperation();
+        }
+
+        private void BeginPresentationOperation()
+        {
+            activePresentationOperationCount++;
+
+            IsBusy =
+                activePresentationOperationCount > 0;
+        }
+
+        private void EndPresentationOperation()
+        {
+            activePresentationOperationCount =
+                Mathf.Max(
+                    0,
+                    activePresentationOperationCount - 1);
+
+            IsBusy =
+                activePresentationOperationCount > 0;
         }
 
         private IEnumerator FadeCharacterIn(
@@ -657,7 +835,7 @@ namespace BaiguVN
                 yield break;
             }
 
-            BeginCharacterFade();
+            BeginPresentationOperation();
 
             yield return FadeImageAlpha(
                 image,
@@ -666,7 +844,7 @@ namespace BaiguVN
             // 最终状态强制完整显示
             SetImageAlpha(image, 1f);
 
-            EndCharacterFade();
+            EndPresentationOperation();
         }
 
         private IEnumerator FadeCharacterOut(
@@ -678,7 +856,7 @@ namespace BaiguVN
                 yield break;
             }
 
-            BeginCharacterFade();
+            BeginPresentationOperation();
 
             yield return FadeImageAlpha(
                 image,
@@ -701,7 +879,7 @@ namespace BaiguVN
                     activePortraitColor);
             }
 
-            EndCharacterFade();
+            EndPresentationOperation();
 }
     }
 }

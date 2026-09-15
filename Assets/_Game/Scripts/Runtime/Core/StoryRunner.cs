@@ -351,7 +351,7 @@ namespace BaiguVN
             if (presentation != null &&
                 !string.IsNullOrEmpty(node.backgroundId))
             {
-                presentation.ApplyBackground(
+                presentation.ApplyBackgroundForStory(
                     node.backgroundId
                 );
 

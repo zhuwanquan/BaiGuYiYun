@@ -85,6 +85,24 @@
       "portraitId": "@clear",
       "portraitSlot": 0,
       "focusSlot": 2,
+      "next": "a01_bg_forest"
+    },
+    {
+      "id": "a01_bg_forest",
+      "type": "line",
+      "speaker": "旁白",
+      "text": "（测试：山路转入森林。）",
+      "backgroundId": "bg_forest",
+      "focusSlot": 2,
+      "next": "a01_bg_peach"
+    },
+    {
+      "id": "a01_bg_peach",
+      "type": "line",
+      "speaker": "旁白",
+      "text": "（测试：森林转入桃林溪边。）",
+      "backgroundId": "bg_peach_stream",
+      "focusSlot": 2,
       "next": "test_end"
     },
     {

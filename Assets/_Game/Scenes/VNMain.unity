@@ -1491,6 +1491,10 @@ MonoBehaviour:
   backgrounds:
   - id: bg_mountain
     sprite: {fileID: 21300000, guid: 43de4c15d0eeb92439fd4be1f3f8a7ff, type: 3}
+  - id: bg_forest
+    sprite: {fileID: 3301354838493240256, guid: 0196a860303383143be901f311becc54, type: 3}
+  - id: bg_peach_stream
+    sprite: {fileID: -6031909758995611391, guid: ded0a84bb548964469e7b74d4d0c2036, type: 3}
   portraits:
   - id: wukong_neutral
     sprite: {fileID: -7441660838408181414, guid: 18d11c998275b464ebf5c86f43820bec, type: 3}
@@ -1501,7 +1505,8 @@ MonoBehaviour:
   - id: tangseng_neutral
     sprite: {fileID: 6131821140394784414, guid: 57c53abe354f8c842a73f31887b5135b, type: 3}
   activePortraitColor: {r: 1, g: 1, b: 1, a: 1}
-  characterFadeSeconds: 5
+  characterFadeSeconds: 0.25
+  backgroundFadeSeconds: 0.35
   inactivePortraitColor: {r: 0.55, g: 0.55, b: 0.55, a: 1}
 --- !u!114 &259248064
 MonoBehaviour:
