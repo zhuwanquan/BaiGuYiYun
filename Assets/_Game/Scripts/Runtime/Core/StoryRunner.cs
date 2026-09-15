@@ -1053,6 +1053,31 @@ namespace BaiguVN
             );
         }
 
+        public bool IsMemorialUnlocked(
+            string memorialId)
+        {
+            if (string.IsNullOrWhiteSpace(
+                memorialId))
+            {
+                return false;
+            }
+
+            EnsureProfileLoaded();
+
+            return profile.memorials.Contains(
+                memorialId
+            );
+        }
+
+        public List<string> GetMemorialsCopy()
+        {
+            EnsureProfileLoaded();
+
+            return new List<string>(
+                profile.memorials
+            );
+        }
+
         private void ApplyPortraitToState(
             string portraitId,
             int slot)
