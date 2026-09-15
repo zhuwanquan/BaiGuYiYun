@@ -87,10 +87,8 @@ namespace BaiguVN
                 return;
             }
 
-            bool loaded =
-                storyRunner.TryLoadSlot(0);
-
-            if (!loaded)
+            // 先确认自动档存在。
+            if (!storyRunner.HasSaveSlot(0))
             {
                 Debug.LogWarning(
                     "没有可以继续的自动存档。"
@@ -102,6 +100,9 @@ namespace BaiguVN
 
             CloseAllOverlayPanels();
 
+            // 先进入阅读界面。
+            // Restore() 会立即重绘 DialogueView，
+            // 所以 StoryPanel / DialoguePanel 必须先处于激活状态。
             titleMode = false;
 
             if (titlePanel != null)
@@ -115,6 +116,35 @@ namespace BaiguVN
             }
 
             storyRunner.SetMenuPaused(false);
+
+            // 阅读 UI 已经激活，现在再恢复自动档。
+            bool loaded =
+                storyRunner.TryLoadSlot(0);
+
+            if (!loaded)
+            {
+                Debug.LogWarning(
+                    "自动存档读取失败，返回标题页。"
+                );
+
+                // 恢复标题状态。
+                titleMode = true;
+
+                if (storyPanel != null)
+                {
+                    storyPanel.SetActive(false);
+                }
+
+                if (titlePanel != null)
+                {
+                    titlePanel.SetActive(true);
+                }
+
+                storyRunner.SetMenuPaused(true);
+
+                RefreshContinueButton();
+                return;
+            }
         }
 
         // =========================================================
@@ -136,7 +166,7 @@ namespace BaiguVN
             {
                 return;
             }
-            
+
             CloseAllOverlayPanels();
 
             titleMode = true;
