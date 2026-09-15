@@ -12946,6 +12946,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BaiguVN.MenuController
   storyRunner: {fileID: 2061971454}
+  presentation: {fileID: 259248063}
   titlePanel: {fileID: 2053440878}
   storyPanel: {fileID: 174554475}
   continueButton: {fileID: 1196624512}

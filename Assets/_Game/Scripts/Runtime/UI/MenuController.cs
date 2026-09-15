@@ -10,6 +10,9 @@ namespace BaiguVN
         [Header("剧情")]
         public StoryRunner storyRunner;
 
+        [Header("演出")]
+        public PresentationController presentation;
+
         [Header("主要页面")]
         public GameObject titlePanel;
         public GameObject storyPanel;
@@ -125,6 +128,15 @@ namespace BaiguVN
 
         public void ShowTitle()
         {
+
+            // 演出 Busy 时不允许切到标题页。
+            // 等演出完整结束以后，下一次操作再正常返回。
+            if (presentation != null &&
+                presentation.IsBusy)
+            {
+                return;
+            }
+            
             CloseAllOverlayPanels();
 
             titleMode = true;
@@ -236,6 +248,14 @@ namespace BaiguVN
 
         public void Back()
         {
+            // 演出 Busy 时，ESC / Back 暂时忽略。
+            // 不打断 Fade，不修改演出状态。
+            if (presentation != null &&
+                presentation.IsBusy)
+            {
+                return;
+            }
+
             if (panelStack.Count > 0)
             {
                 Pop();
