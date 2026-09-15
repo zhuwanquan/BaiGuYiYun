@@ -23,6 +23,12 @@ namespace BaiguVN
         private GameState state;
         private SaveService saveService;
 
+        private ProfileService profileService;
+        private VNProfile profile;
+
+        private const string MainCompletionChapterId =
+            "B03";
+
         private bool menuPaused;
 
         public event Action<VNNode> OnNodeCompleted;
@@ -64,6 +70,12 @@ namespace BaiguVN
                 repository.Load(storyJson);
 
                 saveService = new SaveService();
+
+                profileService =
+                    new ProfileService();
+
+                profile =
+                    profileService.LoadOrCreate();
             }
             catch (Exception ex)
             {
@@ -277,12 +289,128 @@ namespace BaiguVN
             GoTo(current.resume);
         }
 
+        private void EnsureProfileLoaded()
+        {
+            if (profileService == null)
+            {
+                profileService =
+                    new ProfileService();
+            }
+
+            if (profile == null)
+            {
+                profile =
+                    profileService.LoadOrCreate();
+            }
+        }
+
+        private bool TrySaveProfile()
+        {
+            EnsureProfileLoaded();
+
+            try
+            {
+                profileService.SaveProfile(
+                    profile
+                );
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError(
+                    $"Profile 保存失败：\n{ex}"
+                );
+
+                return false;
+            }
+        }
+
+        private void MarkNodeRead(
+            VNNode node)
+        {
+            if (node == null ||
+                string.IsNullOrWhiteSpace(node.id))
+            {
+                return;
+            }
+
+            EnsureProfileLoaded();
+
+            if (profile.readNodeIds.Contains(
+                node.id))
+            {
+                return;
+            }
+
+            profile.readNodeIds.Add(
+                node.id
+            );
+
+            if (!TrySaveProfile())
+            {
+                // 保存失败则撤销内存修改，
+                // 下次完成节点时还可以再次尝试。
+                profile.readNodeIds.Remove(
+                    node.id
+                );
+
+                return;
+            }
+
+            Debug.Log(
+                $"Profile 已读节点：{node.id}"
+            );
+        }
+
+        private void MarkProfileChapterCompleted(
+            string chapterId)
+        {
+            if (string.IsNullOrWhiteSpace(
+                chapterId))
+            {
+                return;
+            }
+
+            EnsureProfileLoaded();
+
+            if (profile.completedChapters.Contains(
+                chapterId))
+            {
+                return;
+            }
+
+            profile.completedChapters.Add(
+                chapterId
+            );
+
+            if (!TrySaveProfile())
+            {
+                profile.completedChapters.Remove(
+                    chapterId
+                );
+
+                return;
+            }
+
+            Debug.Log(
+                $"Profile 永久章节完成：{chapterId}"
+            );
+        }
+
         // =========================================================
         // 完成当前节点
         // =========================================================
 
-        private void CompleteCurrentNode(VNNode node)
+        private void CompleteCurrentNode(
+            VNNode node)
         {
+            if (node == null)
+            {
+                return;
+            }
+
+            // 普通正文继续进入本轮 History。
             if (node.type == "line")
             {
                 state.history.Add(
@@ -294,14 +422,28 @@ namespace BaiguVN
                     }
                 );
 
-                OnNodeCompleted?.Invoke(node);
+                OnNodeCompleted?.Invoke(
+                    node
+                );
+            }
+
+            // line / pause 真正被玩家读完并推进后，
+            // 才计入跨轮已读记录。
+            if (node.type == "line" ||
+                node.type == "pause")
+            {
+                MarkNodeRead(
+                    node
+                );
             }
         }
 
-        private void RegisterCompletedChapter(VNNode node)
+        private void RegisterCompletedChapter(
+            VNNode node)
         {
             if (node == null ||
-                string.IsNullOrWhiteSpace(node.completeChapter))
+                string.IsNullOrWhiteSpace(
+                    node.completeChapter))
             {
                 return;
             }
@@ -317,6 +459,10 @@ namespace BaiguVN
                     new List<string>();
             }
 
+            bool newlyCompletedThisRun =
+                false;
+
+            // 当前这一轮的章节完成记录。
             if (!state.completedChapters.Contains(
                 node.completeChapter))
             {
@@ -324,9 +470,34 @@ namespace BaiguVN
                     node.completeChapter
                 );
 
+                newlyCompletedThisRun =
+                    true;
+
                 Debug.Log(
                     $"章节完成：{node.completeChapter}"
                 );
+            }
+
+            // 当前这一轮首次到达完成点时广播。
+            if (newlyCompletedThisRun)
+            {
+                OnChapterReached?.Invoke(
+                    node.completeChapter
+                );
+            }
+
+            // 跨轮永久记录。
+            MarkProfileChapterCompleted(
+                node.completeChapter
+            );
+
+            // 正式主线完成只认 B03 完成点，
+            // 不再把所有 end 都当作通关。
+            if (node.completeChapter ==
+                MainCompletionChapterId)
+            {
+                state.mainCompleted =
+                    true;
             }
         }
 
@@ -471,8 +642,6 @@ namespace BaiguVN
                     observationView.Hide();
 
                     dialogueView.gameObject.SetActive(true);
-
-                    state.mainCompleted = true;
 
                     dialogueView.Show(node);
                     break;
