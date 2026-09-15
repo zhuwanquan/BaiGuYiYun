@@ -119,6 +119,7 @@
       "speaker": "旁白",
       "text": "（测试：CG 应继续保持显示。）",
       "memorialId": "MEM_DEV_P7_TEST",
+      "collectionId": "COL_DEV_P7_TEST",
       "next": "test_cg_hide"
     },
     {
