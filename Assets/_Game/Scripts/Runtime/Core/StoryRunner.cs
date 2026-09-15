@@ -398,6 +398,43 @@ namespace BaiguVN
             );
         }
 
+        private void UnlockMemorial(
+            string memorialId)
+        {
+            if (string.IsNullOrWhiteSpace(
+                memorialId))
+            {
+                return;
+            }
+
+            EnsureProfileLoaded();
+
+            if (profile.memorials.Contains(
+                memorialId))
+            {
+                return;
+            }
+
+            profile.memorials.Add(
+                memorialId
+            );
+
+            if (!TrySaveProfile())
+            {
+                // 保存失败则回滚内存状态，
+                // 以后再次到达节点仍可重试。
+                profile.memorials.Remove(
+                    memorialId
+                );
+
+                return;
+            }
+
+            Debug.Log(
+                $"Memorial 永久解锁：{memorialId}"
+            );
+        }
+
         // =========================================================
         // 完成当前节点
         // =========================================================
@@ -654,6 +691,16 @@ namespace BaiguVN
             }
 
             RegisterCompletedChapter(node);
+            
+            // 跨轮纪念解锁。
+            // 只有节点明确填写 memorialId 才触发。
+            if (!string.IsNullOrWhiteSpace(
+                node.memorialId))
+            {
+                UnlockMemorial(
+                    node.memorialId
+                );
+            }
 
             // 进入一个稳定节点以后自动保存到 Slot 0
             AutoSaveCurrent();

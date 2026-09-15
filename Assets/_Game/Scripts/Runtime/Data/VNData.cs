@@ -43,6 +43,10 @@ namespace BaiguVN
         public string noteId;
         public string completeChapter;
 
+        // 跨轮永久纪念解锁。
+        // 空字符串 = 本节点不解锁纪念。
+        public string memorialId;
+
         public VNObserveObject[] objects;
     }
 
@@ -109,7 +113,7 @@ namespace BaiguVN
         "BAIGU_V2_PROFILE";
 
         public int schemaVersion = 1;
-        
+
         public List<string> readNodeIds = new List<string>();
         public List<string> completedChapters = new List<string>();
         public List<string> memorials = new List<string>();
