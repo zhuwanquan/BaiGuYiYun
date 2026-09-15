@@ -435,6 +435,41 @@ namespace BaiguVN
             );
         }
 
+        private void UnlockCollection(
+            string collectionId)
+        {
+            if (string.IsNullOrWhiteSpace(
+                collectionId))
+            {
+                return;
+            }
+
+            EnsureProfileLoaded();
+
+            if (profile.collections.Contains(
+                collectionId))
+            {
+                return;
+            }
+
+            profile.collections.Add(
+                collectionId
+            );
+
+            if (!TrySaveProfile())
+            {
+                profile.collections.Remove(
+                    collectionId
+                );
+
+                return;
+            }
+
+            Debug.Log(
+                $"Collection 永久解锁：{collectionId}"
+            );
+        }
+
         // =========================================================
         // 完成当前节点
         // =========================================================
@@ -699,6 +734,14 @@ namespace BaiguVN
             {
                 UnlockMemorial(
                     node.memorialId
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(
+                node.collectionId))
+            {
+                UnlockCollection(
+                    node.collectionId
                 );
             }
 

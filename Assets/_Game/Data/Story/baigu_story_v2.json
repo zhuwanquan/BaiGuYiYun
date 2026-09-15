@@ -127,6 +127,7 @@
       "speaker": "旁白",
       "text": "（测试：关闭 CG。）",
       "cgId": "-",
+      "collectionId": "COL_DEV_P7_TEST",
       "next": "test_end"
     },
     {

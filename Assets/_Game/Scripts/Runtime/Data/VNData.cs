@@ -47,6 +47,10 @@ namespace BaiguVN
         // 空字符串 = 本节点不解锁纪念。
         public string memorialId;
 
+        // 跨轮永久收藏解锁。
+        // 空字符串 = 本节点不解锁收藏。
+        public string collectionId;
+
         public VNObserveObject[] objects;
     }
 
