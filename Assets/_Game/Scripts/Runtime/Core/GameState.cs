@@ -9,6 +9,7 @@ namespace BaiguVN
         public string currentNodeId;
         public int pageIndex;
 
+        [NonSerialized]
         public HashSet<string> observed = new HashSet<string>();
         public List<HistoryEntry> history = new List<HistoryEntry>();
 
