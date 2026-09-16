@@ -1,0 +1,106 @@
+[
+  {
+    "File": "Characters/baigujing_girl_gentle_v1.png",
+    "Width": 1086,
+    "Height": 1448,
+    "PixelFormat": "Format32bppArgb",
+    "CornerAlpha": 0,
+    "SHA256": "FA0A4FC7EC3E9CC59BFA7C195F0B2E97BE7630A2FD895BB597152C25FD49E8B9"
+  },
+  {
+    "File": "Characters/baigujing_oldman_pious_v1.png",
+    "Width": 1086,
+    "Height": 1448,
+    "PixelFormat": "Format32bppArgb",
+    "CornerAlpha": 0,
+    "SHA256": "DFF7F33CCDB116B8AF76584FF4C0A99F6593FF5E3D6B041B972710F87D95E9BB"
+  },
+  {
+    "File": "Characters/baigujing_oldwoman_crying_v1.png",
+    "Width": 1086,
+    "Height": 1448,
+    "PixelFormat": "Format32bppArgb",
+    "CornerAlpha": 0,
+    "SHA256": "F24EDD2EEEFBF60AD7DFC558B8F1D28ED34B222B1F1768E82BF5BDDE5613A94B"
+  },
+  {
+    "File": "Characters/bajie_neutral_v1.png",
+    "Width": 1086,
+    "Height": 1448,
+    "PixelFormat": "Format32bppArgb",
+    "CornerAlpha": 0,
+    "SHA256": "2B5DCDAF5DC58251B70A9ADEE7EFB62F26B71FB5A154FA9360E021A7EAA268E9"
+  },
+  {
+    "File": "Characters/shaseng_neutral_v1.png",
+    "Width": 1086,
+    "Height": 1448,
+    "PixelFormat": "Format32bppArgb",
+    "CornerAlpha": 0,
+    "SHA256": "1A24AFC6A9B1D0A722BF58A88C85837FA5CD56B489452B9E826D75ED405441FD"
+  },
+  {
+    "File": "Characters/tangseng_calm_v1.png",
+    "Width": 1086,
+    "Height": 1448,
+    "PixelFormat": "Format32bppArgb",
+    "CornerAlpha": 0,
+    "SHA256": "F10F8B4E2EEDEDEC8C3B79774C759DD444FF018A732BE47F60128F582BFF857A"
+  },
+  {
+    "File": "Characters/wukong_neutral_v1.png",
+    "Width": 1086,
+    "Height": 1448,
+    "PixelFormat": "Format32bppArgb",
+    "CornerAlpha": 0,
+    "SHA256": "92E2D33948D950478A9DAF956130DA2FE0F465B837F46FB24FB42746AE3490CD"
+  },
+  {
+    "File": "Backgrounds/bg_baihuling_rest_v1.png",
+    "Width": 1672,
+    "Height": 941,
+    "PixelFormat": "Format24bppRgb",
+    "CornerAlpha": 255,
+    "SHA256": "194BBCF88A3619E907E86591B6A0EA351A446CF1058F6BA5F284EC187E42E00E"
+  },
+  {
+    "File": "Backgrounds/bg_baihuling_road_v1.png",
+    "Width": 1672,
+    "Height": 940,
+    "PixelFormat": "Format24bppRgb",
+    "CornerAlpha": 255,
+    "SHA256": "4155FF6B51BD676837D1E492E47F1B1699EB9DAA998491CC99E0D63D98243F67"
+  },
+  {
+    "File": "Backgrounds/bg_baihuling_slope_v1.png",
+    "Width": 1672,
+    "Height": 941,
+    "PixelFormat": "Format24bppRgb",
+    "CornerAlpha": 255,
+    "SHA256": "6610890C4737FE4855BA4A021E8F4A705B08D85969D204B25D8C0DC273E25A25"
+  },
+  {
+    "File": "Backgrounds/bg_cloud_yin_v1.png",
+    "Width": 1672,
+    "Height": 941,
+    "PixelFormat": "Format24bppRgb",
+    "CornerAlpha": 255,
+    "SHA256": "F0E184A5ECD65748C8FAFE20E0FD2799F6829D2072DF7A820276D219DD0FD120"
+  },
+  {
+    "File": "Backgrounds/bg_east_sea_sky_v1.png",
+    "Width": 1672,
+    "Height": 941,
+    "PixelFormat": "Format24bppRgb",
+    "CornerAlpha": 255,
+    "SHA256": "3032D187BC88F3E87FCE92644E64F01D21D399577EC30B2DAC9DB7D06C6B1C33"
+  },
+  {
+    "File": "Backgrounds/bg_wuzhuang_gate_v1.png",
+    "Width": 1672,
+    "Height": 941,
+    "PixelFormat": "Format24bppRgb",
+    "CornerAlpha": 255,
+    "SHA256": "1896CC69985C96E777716D6F6C3D1204D813CD2FDB7A06F3C1AE3FB1C15D01F3"
+  }
+]

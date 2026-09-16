@@ -1,0 +1,645 @@
+《白骨疑云》
+P8 正式内容资源需求与获取方案
+覆盖 S01–S12《三打白骨精》正式视觉小说剧本
+版本 1.0 · 2026-09-16
+
+用途
+本文件用于在 P8 正式剧情接入前一次性明确“需要制作/获取哪些内容资源、哪些适合 AI 生成、哪些更适合从授权素材库取得、哪些必须人工处理”。音乐相关内容虽然当前暂缓专项测试，但仍纳入资源规划，后续接入时再单独验收。
+目录
+1. 依据、边界与制作原则
+2. 资源总览与优先级
+3. S01–S12 场景资源映射
+4. AI 视觉生成统一规范
+5. 背景资源：清单与提示词
+6. 角色立绘：角色圣经与表情提示词
+7. CG / 观察特写：清单与提示词
+8. 道具与图标：清单与提示词
+9. 音频资源：需求、AI 音乐提示词与素材库
+10. 字体 / UI / 文本类资源
+11. 需要人工处理或用户自行解决的项目
+12. 文件命名、导入规格与版权留档
+13. 推荐制作顺序与验收清单
+1. 依据、边界与制作原则
+资源清单以用户提供的《三打白骨精 视觉小说剧本》为唯一正式内容依据，并用《西游记》第二十七回原文作情节与措辞核对。正式剧本从 S01“别观入山”到 S12“海上泪别”，固定主线、单一章节结局；交互只用于复看已出现事实，不改变人物决定。
+【原】台词：允许拆框，不改变说话者与顺序；不因美术需要改写原句。
+【改】内容：按剧本现有改编措辞执行，不再自行扩写人物动机。
+【演出】内容：允许用背景、立绘、CG、镜头、音效、配乐实现，但不得制造新的剧情事实。
+【交互】I01 / I02 / I03：只控制查看或停留，不产生分支、数值或隐藏结局。
+不得照搬现代影视/游戏中的人物造型、服装、演员脸或标志性镜头；所有 AI 提示词均按“古典中国神魔题材原创视觉设计”描述。
+“白骨夫人”四字必须准确出现在脊梁位置；唐僧贬书不得伪造剧本没有提供的可读全文；紧箍咒不得生成原文未提供的具体咒语。
+2. 资源总览与优先级
+类别
+数量估计
+推荐来源
+优先级
+说明
+背景
+6 张核心背景
+AI 优先
+P0 必需
+五庄观外景、白虎岭山路、山岩歇脚处、山坡、阴云上空、东海上空
+角色立绘
+8 个角色/形态，约 28 个表情态
+AI 优先 + 参考图一致性
+P0 必需
+唐僧、悟空、八戒、沙僧；妖影、女子、老妇、老翁
+关键 CG
+8 张核心 + 4 张观察/特写
+AI 优先 + 人工后期
+P0/P1
+两次元神脱逃、食物真相、白骨刻字、贬书、四身辞拜、海上落泪等
+独立道具
+8–10 件
+AI 生成或嵌入 CG
+P1
+钵盂山桃、青砂罐、绿磁瓶、两种拐杖、数珠、纸笔墨、贬书
+环境音
+约 6 组
+素材库优先
+P1
+山风、马蹄、脚步/行李、阴风、山林、海潮
+剧情音效
+约 12–15 个
+素材库优先
+P1
+棒挥、撞击、蛙蟆、念诵氛围、痛感、磨墨、折纸等
+配乐
+4 组循环主题
+AI 可生成 / 素材库可替代
+P2（当前暂缓专项测试）
+山行、妖计、冲突、诀别
+字体与 UI
+1 套中文字体 + 基础 UI 图形
+现有资源/开源库
+P0/P9
+Noto CJK；正式 UI 统一留 P9
+人工合成
+3–4 项
+人工处理
+P0/P1
+白骨夫人精确文字、四悟空一致复制、贬书不可读字迹、章节完结文字
+3. S01–S12 场景资源映射
+场景
+背景
+立绘
+CG/道具
+音效/环境
+配乐
+S01 别观入山
+bg_wuzhuang_gate / bg_baihuling_road / bg_baihuling_rest
+唐僧、悟空、八戒、沙僧
+钵盂+山桃（可嵌入）
+山风、马蹄、行李轻响、兽群逃散、纵云 whoosh
+bgm_travel
+S02 妖起山凹
+bg_cloud_yin / bg_baihuling_rest
+妖影、女子、唐僧、八戒、沙僧
+—
+阴风、轻微变形过渡
+bgm_scheme
+S03 送饭试僧
+bg_baihuling_rest
+女子、八戒、唐僧、沙僧
+青砂罐、绿磁瓶
+山风、罐器轻碰
+bgm_travel_light
+S04 一打假尸
+bg_baihuling_rest
+悟空、唐僧、八戒、女子
+CG：第一次棒击/元神脱逃；CG：食物真相；I01 两张特写
+棒挥、撞击、虫动、蛙蟆、低念诵/痛感
+bgm_conflict
+S05 第一次逐徒
+bg_baihuling_rest / road
+悟空、唐僧
+CG：跪地哀告（推荐）；钵盂山桃
+低念诵、痛感、衣料/跪地
+bgm_conflict_soft
+S06 二打老妇
+bg_cloud_yin / bg_baihuling_slope
+妖影、老妇、悟空、唐僧、八戒
+CG：第二次棒击/元神脱逃；弯头竹杖
+哭声氛围、拐杖、棒挥、撞击、念诵/痛感
+bgm_scheme→conflict
+S07 松箍难解
+bg_baihuling_slope / road
+悟空、唐僧、八戒
+—
+环境风、衣料
+bgm_conflict_low
+S08 三化老翁
+bg_cloud_yin / bg_baihuling_slope
+妖影、老翁、悟空、唐僧、八戒
+龙头拐、数珠
+阴风、拐杖脚步、低声念经氛围
+bgm_scheme
+S09 三打断灵
+bg_baihuling_slope
+悟空、唐僧、八戒、土地山神群像
+CG：众神作证/第三击；CG：白骨本相；I02 刻字/唐僧反应
+棒挥、重击、短闪白音、低念诵
+bgm_conflict
+S10 白骨与贬书
+bg_baihuling_slope / stream-side crop
+悟空、唐僧、沙僧
+CG：石上磨墨写贬书；折起贬书
+涧水、磨墨、毛笔书写、纸张折叠
+bgm_farewell_begin
+S11 四身辞师
+bg_baihuling_road
+悟空、唐僧、沙僧
+CG：一真身+三分身四面辞拜
+轻微变身气流、衣料、风
+bgm_farewell
+S12 海上泪别
+bg_east_sea_sky
+悟空伤情/泪
+CG：海上落泪；I03 停云听潮
+纵云、持续海潮
+bgm_farewell→仅海潮
+4. AI 视觉生成统一规范
+为避免“每张都好看但互相不像同一部作品”，先固定一套总风格，再生成角色圣经与场景。提示词采用英文主体，是因为多数图像模型对摄影/构图/材质控制词的英文理解更稳定；中文用于解释约束。
+全局 STYLE_PROMPT（所有背景/立绘/CG 都附加）
+original 2D visual novel illustration, classical Chinese mythological journey, grounded Tang-dynasty-inspired travel clothing and Buddhist robes, refined hand-painted digital art with subtle Chinese ink-and-color influence, muted mineral pigments, cinematic but restrained lighting, believable cloth and weathering, expressive faces, elegant linework, coherent production design, no modern objects, no text, no watermark, no logo, no resemblance to any film/TV actor, no copying of existing Journey to the West adaptation costume designs, production-ready game art
+
+全局 NEGATIVE_PROMPT
+photorealistic celebrity likeness, modern clothing, Japanese school uniform, chibi, super-deformed proportions, cyberpunk, steampunk, western medieval armor, neon colors, excessive fantasy armor, glossy plastic skin, 3D render look, distorted hands, extra fingers, extra limbs, duplicate faces, unreadable pseudo-Chinese text, watermark, signature, logo, UI frame, subtitles
+
+角色一致性：先生成“角色圣经/character sheet”，选定一张后作为后续所有表情与 CG 的 reference image；不要每个表情从零生成。
+立绘统一：固定镜头（约 70–85mm 人像感）、同一裁切、同一身高基线、同一服装、同一发型、同一光照方向。
+背景统一：人物为空；保留前景/中景/远景；为三槽立绘留出视觉负空间，不把视觉焦点都挤在中央。
+所有包含准确汉字的画面先生成“无字底图”，文字在 Unity/TMP 或后期软件中人工叠加。
+5. 背景资源：清单与提示词
+BG01 / bg_wuzhuang_gate — 五庄观外景
+用途：S01 开场　优先级：P0
+AI 提示词
+wide exterior of Wuzhuang Temple in the mountains, ancient Chinese Taoist monastery compound seen from outside, stone steps, old pines, tiled roofs, dawn-to-morning clear light, pilgrims have just departed but no people visible, calm transitional mood, distant mountain haze, composition leaves open lower-middle area for visual novel characters, 16:9 landscape, original 2D visual novel background, classical Chinese mythological journey, subtle ink-and-color influence, no characters, no text, no watermark, 2560x1440 master
+
+BG02 / bg_baihuling_road — 白虎岭山路远景
+用途：S01、S07、S11　优先级：P0
+AI 提示词
+dangerous mountain road through White Tiger Ridge, layered rocky peaks, ravines, old pines and climbing vines, scattered animal tracks and distant silhouettes only, daylight with cold mountain atmosphere, winding path leading westward, no buildings, no people, strong depth, central road but clear side space for portraits, 16:9, original 2D visual novel background, classical Chinese mythological journey, subtle ink-and-color influence, no characters, no text, no watermark, 2560x1440 master
+
+BG03 / bg_baihuling_rest — 山岩歇脚处
+用途：S01–S05　优先级：P0
+AI 提示词
+rocky mountain resting place beside a narrow travel path, broad flat stone area suitable for a monk resting and a horse nearby, rough cliffs, pine roots, sparse grass, distant forest, daylight, believable travel stop in remote Chinese mountains, no people and no horse rendered, leave foreground clear for multiple portraits, 16:9, original 2D visual novel background, classical Chinese mythological journey, subtle ink-and-color influence, no characters, no text, no watermark, 2560x1440 master
+
+BG04 / bg_baihuling_slope — 前山坡/三次遭遇区
+用途：S06–S10　优先级：P0
+AI 提示词
+front mountain slope on White Tiger Ridge, sloping dirt path, weathered stones, sparse shrubs, uneven terrain, open area where an elderly traveler could approach, distant western road visible, late-afternoon neutral daylight, slightly tense atmosphere, no people, 16:9 visual novel background, original 2D visual novel background, classical Chinese mythological journey, subtle ink-and-color influence, no characters, no text, no watermark, 2560x1440 master
+
+BG05 / bg_cloud_yin — 阴云上空/妖气层
+用途：S02、S06、S08　优先级：P0
+AI 提示词
+high above mountain ridge under dark drifting clouds, turbulent yin wind visualized as long smoky cloud ribbons, mountain landscape far below, eerie but not horror-gore, moonless daytime shadow, large empty silhouette space for a demon figure, no characters, 16:9, original 2D visual novel background, classical Chinese mythological journey, subtle ink-and-color influence, no characters, no text, no watermark, 2560x1440 master
+
+BG06 / bg_east_sea_sky — 东洋大海上空
+用途：S12　优先级：P0
+AI 提示词
+vast East China Sea seen from high in the sky, rolling blue-gray waves, distant horizon, layered clouds, solitary and melancholic atmosphere, late daylight with soft silver light, no ships, no modern coastline, wide open sky for a flying figure, 16:9 cinematic visual novel background, original 2D visual novel background, classical Chinese mythological journey, subtle ink-and-color influence, no characters, no text, no watermark, 2560x1440 master
+
+6. 角色立绘：角色圣经与表情提示词
+建议先完成 8 个“基准形象”，再用参考图生成表情变化。主角四人尽量做 3/4 身透明立绘；妖精三种人形也做同样裁切。土地山神无需做独立立绘，优先作为 S09 CG 群像。
+孙悟空 / wukong
+角色圣经基础提示词
+Sun Wukong as an original classical Chinese mythological traveler, lean athletic monkey king with expressive simian facial structure, golden-brown fur, intelligent sharp eyes, simple monk-traveler clothing with restrained red-brown and ochre accents, golden headband clearly visible, Ruyi Jingu Bang carried naturally, not ornate armor, not based on any film or TV design, three-quarter body, transparent background, original 2D visual novel character art, subtle Chinese ink-and-color influence, consistent costume design, clean silhouette, transparent background, no text, no watermark, 1536x2048 master
+
+表情/动作变体：
+neutral 冷静警觉
+alert 火眼识妖
+angry 怒意举棒
+pain 紧箍疼痛抱头
+plead 跪地/哀告时的恳切
+sad 临别伤情含泪
+inner_thought 收束表情、思量
+生成方式：将已确认的角色圣经图作为 reference image，保持服装、发型、脸型、镜头、裁切与光源不变，仅追加对应情绪词。
+唐僧 / tangseng
+角色圣经基础提示词
+Tang Sanzang as an original classical Chinese Buddhist monk, slender adult male, shaved head, calm scholarly face, layered travel-worn monk robes inspired by Tang-era Buddhist clothing, muted saffron and earth tones, prayer beads optional, dignified rather than ornate, no crown-like movie costume, three-quarter body, transparent background, original 2D visual novel character art, subtle Chinese ink-and-color influence, consistent costume design, clean silhouette, transparent background, no text, no watermark, 1536x2048 master
+
+表情/动作变体：
+calm 平静
+wary 戒备/追问
+refuse 坚持拒食
+embarrassed 羞恼面红
+doubt 动摇/三分相信
+angry 怒斥逐徒
+moved 听报恩后心软
+shocked 见白骨时惊疑
+生成方式：将已确认的角色圣经图作为 reference image，保持服装、发型、脸型、镜头、裁切与光源不变，仅追加对应情绪词。
+猪八戒 / bajie
+角色圣经基础提示词
+Zhu Bajie as an original classical Chinese mythological pig-featured traveler, stout body, pig snout and ears integrated naturally, worn monk-traveler clothing, dark rake strapped or held when appropriate, expressive comedic face but not chibi, earthy gray-brown palette, three-quarter body, transparent background, original 2D visual novel character art, subtle Chinese ink-and-color influence, consistent costume design, clean silhouette, transparent background, no text, no watermark, 1536x2048 master
+
+表情/动作变体：
+neutral 常态
+eager 见女子/食物热切
+hungry 贪食努嘴
+alarm 老妇/老翁出现时惊慌
+sow_doubt 唆嘴时自以为是
+smug 三打后侧身一笑
+生成方式：将已确认的角色圣经图作为 reference image，保持服装、发型、脸型、镜头、裁切与光源不变，仅追加对应情绪词。
+沙僧 / shaseng
+角色圣经基础提示词
+Sha Wujing as an original classical Chinese mythological monk-traveler, tall broad-shouldered adult male, weathered but calm face, travel-worn dark blue-gray and earthy robes, understated prayer-bead necklace, dependable and quiet presence, no exaggerated monster design, three-quarter body, transparent background, original 2D visual novel character art, subtle Chinese ink-and-color influence, consistent costume design, clean silhouette, transparent background, no text, no watermark, 1536x2048 master
+
+表情/动作变体：
+neutral 护持师父
+support 搀扶/取物动作感
+concerned 紧张担忧
+solemn 临别听嘱
+生成方式：将已确认的角色圣经图作为 reference image，保持服装、发型、脸型、镜头、裁切与光源不变，仅追加对应情绪词。
+白骨夫人妖影 / baigujing_shadow
+角色圣经基础提示词
+mysterious female demon silhouette before transformation, elegant but threatening humanoid outline formed from dark wind and pale bone-white wisps, face mostly obscured, long sleeves suggested by smoke, subtle skeletal motifs only, not gore, three-quarter floating silhouette, transparent background, original 2D visual novel character art, subtle Chinese ink-and-color influence, consistent costume design, clean silhouette, transparent background, no text, no watermark, 1536x2048 master
+
+表情/动作变体：
+watching 观察唐僧
+angry 前两次脱逃后的恼怒
+生成方式：将已确认的角色圣经图作为 reference image，保持服装、发型、脸型、镜头、裁切与光源不变，仅追加对应情绪词。
+年轻女子 / baigujing_girl
+角色圣经基础提示词
+young rural Chinese woman disguise used by the White Bone Demon, around young adult age, clear refined features, modest classical countryside clothing, pale muted green and cream fabric, carries a blue-green earthenware food jar in left hand and green porcelain bottle in right, warm restrained smile, no modern makeup, no sexualized costume, three-quarter body, transparent background, original 2D visual novel character art, subtle Chinese ink-and-color influence, consistent costume design, clean silhouette, transparent background, no text, no watermark, 1536x2048 master
+
+表情/动作变体：
+gentle 温顺笑容
+frozen 被悟空识破后笑意僵住/惊愕
+生成方式：将已确认的角色圣经图作为 reference image，保持服装、发型、脸型、镜头、裁切与光源不变，仅追加对应情绪词。
+老妇 / baigujing_oldwoman
+角色圣经基础提示词
+elderly Chinese woman disguise, around eighty years old, white temples, deeply lined face, thin frail body, simple old rural robes, curved bamboo walking stick, slow posture and tearful expression, dignified realistic aging, not grotesque, three-quarter body, transparent background, original 2D visual novel character art, subtle Chinese ink-and-color influence, consistent costume design, clean silhouette, transparent background, no text, no watermark, 1536x2048 master
+
+表情/动作变体：
+crying 哭着走来
+startled 悟空逼近时短暂惊惧
+生成方式：将已确认的角色圣经图作为 reference image，保持服装、发型、脸型、镜头、裁切与光源不变，仅追加对应情绪词。
+老翁 / baigujing_oldman
+角色圣经基础提示词
+elderly Chinese man disguise, very old white-haired scholar-like rural elder, long pale beard, crane-pattern inspired light robe kept simple, dragon-headed walking staff, prayer beads in one hand, mouth quietly reciting scripture, frail slow gait, pious surface expression, three-quarter body, transparent background, original 2D visual novel character art, subtle Chinese ink-and-color influence, consistent costume design, clean silhouette, transparent background, no text, no watermark, 1536x2048 master
+
+表情/动作变体：
+pious 念经慈和
+stiff 笑意僵住被识破
+生成方式：将已确认的角色圣经图作为 reference image，保持服装、发型、脸型、镜头、裁切与光源不变，仅追加对应情绪词。
+7. CG / 观察特写：清单与提示词
+CG01 / cg_s04_first_escape — 第一次棒击与元神脱逃
+用途：S04 核心
+AI 提示词
+Sun Wukong swings the Ruyi Jingu Bang toward the disguised young woman on a rocky mountain path; crucial timing: the demon spirit has already escaped upward as a pale smoky female silhouette BEFORE the staff lands, while an empty fake human body collapses below; Tang Sanzang reaches out in alarm; show clearly that escape precedes impact, no gore, no victory pose, dynamic diagonal composition, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+CG02 / cg_s04_food_truth — 饭食露出真相
+用途：S04 核心/I01 前置
+AI 提示词
+top-down close-up on a blue-green earthenware jar and green porcelain bottle area on rough mountain ground; the jar contents are revealed as long-tailed maggots and the supposed gluten is replaced by frogs and toads jumping nearby; unsettling but not graphic gore, readable object separation, documentary clarity, no people, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+I01-A / obs_jar_maggots — 青砂罐内长蛆特写
+用途：I01
+AI 提示词
+close-up inspection image of an old blue-green earthenware food jar on mountain ground, inside are several long-tailed maggot-like creatures, natural damp texture, unsettling but non-gory, object study framing, no hands, no text, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+I01-B / obs_frogs — 绿磁瓶旁蛙蟆特写
+用途：I01
+AI 提示词
+close-up inspection image beside a green porcelain bottle on rocky ground, several frogs and toads hopping around where food was expected, clear readable shapes, non-gory, object study framing, no people, no text, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+CG03 / cg_s05_wukong_kneel — 悟空跪地报恩
+用途：S05 推荐
+AI 提示词
+emotional two-character visual novel CG: Sun Wukong kneels and bows on a mountain road, Tang Sanzang stands before him listening with conflicted expression, camera lowered slightly to emphasize the kneeling posture, no reconciliation embrace, restrained sadness, travel-worn clothes, soft mountain light, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+CG04 / cg_s06_second_escape — 第二次棒击与元神脱逃
+用途：S06 核心
+AI 提示词
+on a mountain slope, Sun Wukong strikes at the elderly woman disguise; the pale demon spirit has already separated and is rising away while the elderly disguise collapses as a fake body; Tang Sanzang is shocked and has fallen near the roadside; clearly preserve two viewpoints: player sees spirit escape, Tang sees a fallen old woman; no gore, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+CG05 / cg_s09_gods_witness — 土地山神半空作证 + 第三击
+用途：S09 核心
+AI 提示词
+dramatic mythological scene: Sun Wukong raises his staff on the mountain road after calling local earth and mountain gods; several small divine figures remain high in the clouds as witnesses, not approaching Tang Sanzang; the White Bone Demon in old-man disguise is below; tense pre-strike moment, no triumphant victory mood, no text, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+CG06 / cg_s09_skeleton_base — 白骨本相底图（无字）
+用途：S09 核心
+AI 提示词
+close cinematic view of a pile of pale human-like bones revealed on a mountain path after the demon is defeated, focus on the spine area clearly visible and unobstructed, no gore, no blood, bones arranged naturally, Tang Sanzang and Sun Wukong may be soft-focus in background, IMPORTANT: leave the spine surface blank with NO generated writing because exact Chinese characters will be composited manually later, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+I02-A / obs_spine_base — 脊梁刻字放大底图（无字）
+用途：I02
+AI 提示词
+macro close-up of the exposed spine bone from the revealed skeleton, bone texture and engraved flat area clearly visible, centered and large enough for later manual overlay of four Chinese characters, no generated text, no blood, neutral lighting, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+I02-B / obs_tangseng_belief — 唐僧由惊疑转为相信
+用途：I02
+AI 提示词
+close portrait crop of Tang Sanzang looking down at the revealed skeleton, expression transitioning from shock and doubt toward reluctant belief, subtle emotional shift, mountain daylight, no text, visual novel CG portrait crop, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+CG07 / cg_s10_demotion_letter — 石上磨墨与贬书
+用途：S10 核心
+AI 提示词
+close-up sequence-style composition: travel paper, brush, inkstone on a flat mountain stone beside a small stream; Tang Sanzang's hand writes a dismissal letter while Sha Wujing has brought the materials; Sun Wukong waits in the background, mood sorrowful not ceremonial; writing on paper must be defocused or abstract ink strokes, NOT readable invented letter content, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+CG08 / cg_s11_four_wukong — 一真身 + 三分身四面辞拜
+用途：S11 核心
+AI 提示词
+high-angle or oblique top-down composition: exactly FOUR Sun Wukong figures surround Tang Sanzang and bow, representing one true body plus three hair-clone doubles; all four Wukong figures must be visually identical in costume and face; Tang Sanzang turns away yet cannot avoid the bow; Sha Wujing remains near the master; no fifth Wukong, no crowd, no text, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+CG09 / cg_s12_sea_tears — 海上停云落泪
+用途：S12 核心/收束
+AI 提示词
+wide melancholic visual novel CG over the East China Sea: Sun Wukong alone on a cloud high above rolling ocean waves, stopped mid-flight, looking back toward the distant westward route, tears visible at the edge of his cheek, vast sky and sea dominate the frame, no other characters, no reconciliation, quiet unresolved ending, silver-blue daylight, original 2D visual novel CG, classical Chinese mythological journey, painterly ink-and-color influence, cinematic 16:9, no subtitles, no watermark, 2560x1440 master
+
+8. 道具与图标：清单与提示词
+多数道具可以直接画进立绘/CG；只有需要 Observe 放大、独立移动或重复使用时才建议单独导出透明 PNG。
+ID
+资源
+AI 提示词
+是否必须独立文件
+prop_alms_bowl_peaches
+钵盂与山桃
+traditional Buddhist alms bowl containing several ripe mountain peaches, slightly worn metal or dark ceramic, realistic travel use, isolated object, transparent background, no text, original game prop art, clean edges, transparent background, no text, no watermark, 1024x1024
+I01/重复使用优先独立；其余可嵌入 CG
+prop_blue_jar
+青砂罐
+old blue-green earthenware food jar, modest rural household object, Chinese classical period, hand-thrown ceramic texture, isolated, transparent background, original game prop art, clean edges, transparent background, no text, no watermark, 1024x1024
+I01/重复使用优先独立；其余可嵌入 CG
+prop_green_bottle
+绿磁瓶
+slender green porcelain bottle, simple rural household vessel, celadon-like glaze, classical Chinese object, isolated, transparent background, original game prop art, clean edges, transparent background, no text, no watermark, 1024x1024
+I01/重复使用优先独立；其余可嵌入 CG
+prop_bamboo_cane
+弯头竹杖
+aged curved-head bamboo walking stick used by a frail elderly woman, worn smooth handle, simple practical object, isolated, transparent background, original game prop art, clean edges, transparent background, no text, no watermark, 1024x1024
+I01/重复使用优先独立；其余可嵌入 CG
+prop_dragon_staff
+龙头拐
+elderly man's dragon-headed walking staff, carved wood with restrained traditional motif, no excessive gold or fantasy jewels, isolated, transparent background, original game prop art, clean edges, transparent background, no text, no watermark, 1024x1024
+I01/重复使用优先独立；其余可嵌入 CG
+prop_prayer_beads
+数珠
+simple Buddhist prayer beads held in one hand, dark wood beads, classical Chinese travel use, isolated, transparent background, original game prop art, clean edges, transparent background, no text, no watermark, 1024x1024
+I01/重复使用优先独立；其余可嵌入 CG
+prop_brush_inkstone
+纸笔墨组合
+small travel writing set on rough flat stone: Chinese brush, inkstone with fresh black ink, plain paper, small water trace, practical and modest, top-down isolated prop arrangement, no readable writing, original game prop art, clean edges, transparent background, no text, no watermark, 1024x1024
+I01/重复使用优先独立；其余可嵌入 CG
+prop_demotion_folded
+折起的贬书
+folded handwritten Chinese paper letter as a travel document, worn cream paper with black ink strokes visible but NOT readable as actual text, tied or simply folded, isolated, transparent background, original game prop art, clean edges, transparent background, no text, no watermark, 1024x1024
+I01/重复使用优先独立；其余可嵌入 CG
+9. 音频资源：需求、AI 音乐提示词与素材库
+正式剧本要求山风、马蹄、兽逃、纵云、杖声、哭声、棒击、蛙蟆、低声念诵、磨墨、折纸、海潮等音效，并规划“山行、妖计、冲突、诀别”四组配乐情绪。当前项目音乐专项测试已延期，但建议现在先把文件来源与授权留档。
+BGM01 / bgm_travel — 山行主题
+AI 音乐生成提示词（如使用具备商业授权的音乐生成服务）
+instrumental Chinese-inspired cinematic background for a classical mythological journey, slow walking pulse, xiao flute and soft plucked strings, sparse low percussion, calm at first with subtle unease gradually entering, no vocals, no heroic fanfare, seamless loop, 70–80 BPM, 2–3 minutes
+备注：实际商用授权以所选 AI 音乐服务当期条款为准；保留生成记录、模型/服务名称、日期和许可截图。
+
+BGM02 / bgm_scheme — 妖计主题
+AI 音乐生成提示词（如使用具备商业授权的音乐生成服务）
+dark restrained Chinese-fantasy underscore, low bowed strings, xun-like breathy flute color, sparse wooden percussion, drifting dissonant textures suggesting yin wind and deception, mysterious rather than horror, no vocals, no jump-scare hits, seamless loop, 60–75 BPM, 2–3 minutes
+备注：实际商用授权以所选 AI 音乐服务当期条款为准；保留生成记录、模型/服务名称、日期和许可截图。
+
+BGM03 / bgm_conflict — 师徒冲突主题
+AI 音乐生成提示词（如使用具备商业授权的音乐生成服务）
+tense emotional instrumental for argument and moral conflict, restrained percussion, low strings, guqin or plucked-zither accents, rising pressure without sounding like a battle victory theme, able to sit under dialogue, seamless loop, 75–90 BPM, 2–3 minutes
+备注：实际商用授权以所选 AI 音乐服务当期条款为准；保留生成记录、模型/服务名称、日期和许可截图。
+
+BGM04 / bgm_farewell — 诀别主题
+AI 音乐生成提示词（如使用具备商业授权的音乐生成服务）
+melancholic Chinese-inspired instrumental for separation and unresolved grief, sparse xiao flute, soft guqin, low sustained strings, much empty space, tender but not sentimental triumph, gradually thinning texture so ocean ambience can take over, no vocals, seamless loop, 55–70 BPM, 2–3 minutes
+备注：实际商用授权以所选 AI 音乐服务当期条款为准；保留生成记录、模型/服务名称、日期和许可截图。
+
+建议 ID
+用途
+搜索词
+推荐来源
+备注
+amb_mountain_wind
+持续山风
+wind / soft wind / mountain wind
+Pixabay / Mixkit
+循环，避免强烈鸟鸣抢对白
+se_horse_hoof
+马蹄/勒马
+horse gallop / hoof / horse step
+Pixabay / Freesound
+可切短为 1–3 秒
+se_luggage_rustle
+行李/衣料轻响
+cloth rustle / bag movement
+Freesound / Pixabay
+低音量点缀
+se_beast_flee
+兽群惊散
+animal running / bushes / stampede light
+Pixabay / Freesound
+不要现代大型畜牧场氛围
+se_cloud_whoosh
+纵云/筋斗云
+whoosh / wind rush / air swoosh
+Pixabay / Mixkit
+短促，避免科幻喷气
+se_staff_swing
+金箍棒挥动
+whoosh bamboo / staff swing
+Pixabay / Freesound
+可叠加 whoosh + 木/金属低频
+se_staff_hit
+棒击
+stick hit / heavy impact / thwack
+Pixabay / Mixkit
+避免血腥骨裂音
+se_frog
+蛙蟆跳动
+frog / toad
+Pixabay / Freesound
+I01 使用
+se_insect_movement
+虫动
+insects / wet crawl / small movement
+Freesound
+需克制，不做恐怖黏液特效
+se_old_cane
+拐杖点地
+walking stick / cane tap / wood tap
+Freesound / Pixabay
+老妇/老翁可复用不同节奏
+se_cry_amb
+老妇哭声氛围
+elderly crying / sobbing
+Pixabay / Freesound
+不加入剧本没有的具体呼喊台词
+se_low_chant
+低声念诵氛围
+chant / low murmur / prayer ambience
+Pixabay / Freesound
+只做不可辨具体词的低声氛围，不能伪造紧箍咒全文
+se_pain_pulse
+紧箍痛感
+low impact / pulse / pressure hit
+Mixkit / Pixabay
+抽象痛感，不用写实伤害
+se_ink_grind
+磨墨
+stone grinding / inkstone / gentle grind
+Freesound
+若找不到可用石磨/研磨声轻处理
+se_brush_write
+毛笔书写
+writing / brush on paper / pencil paper
+Pixabay / Freesound
+优先柔软纸面摩擦
+se_paper_fold
+折纸/贬书
+paper fold / paper rustle
+Pixabay / Mixkit
+S10
+amb_ocean
+海潮
+ocean / sea waves
+Pixabay / Mixkit
+S12 结尾可独立持续播放
+9.1 推荐素材站与授权注意
+Pixabay Content License（官方许可摘要） — 可免费使用、通常无需署名、可修改；不可把素材原样作为独立商品再分发。下载具体素材时仍应保存原页面与许可记录。
+Pixabay Sound Effects — 优先用于环境音和常见剧情音效。
+Pixabay - Wind — 山风/阴风检索。
+Pixabay - Horse — 马蹄、嘶鸣。
+Pixabay - Footsteps — 步伐/移动。
+Pixabay - Whoosh — 纵云、棒挥、转场气流。
+Pixabay - Stick Hit — 棒击/木质冲击。
+Pixabay - Frog — I01 蛙蟆。
+Pixabay - Paper — 纸张、折纸。
+Pixabay - Writing — 书写摩擦。
+Pixabay - Cry — 哭声；必须筛掉婴儿/现代环境，且不要使用含具体台词的哭喊。
+Pixabay - Chant — 低声念诵氛围；仅选不可辨具体咒语的氛围。
+Pixabay - Ocean — S12 海潮。
+Pixabay - Chinese Music — 可寻找中国风配乐占位或正式候选。
+Mixkit - Free Sound Effects — 常用音效，页面说明可用于商业/个人项目且无需署名；仍需查看具体许可。
+Mixkit - Free Stock Music — 可按 Traditional / World / Mysterious / Dramatic / Melancholic 等标签筛选。
+Mixkit License — 不同素材类型对应不同许可；下载前确认使用的是 Free License 项目。
+Freesound FAQ / Licenses — 补充找冷门拟音。每条声音许可不同；商业项目优先筛 CC0 或 CC-BY，避免 CC-BY-NC。
+OpenGameArt FAQ / Licenses — 可作为游戏音效/美术备选；逐项检查 CC0/CC-BY/其他许可，不建议不理解许可时使用 GPL/SA 类资源。
+10. 字体 / UI / 文本类资源
+正文与 UI：继续使用项目现有 Noto Sans CJK SC TMP 字体即可；不需要为 P8 更换字体。
+“白骨夫人”四字：建议使用 Noto Serif CJK SC 或现有中文字体人工排版，再做骨面透视/雕刻效果；不要让图像模型生成汉字。
+“第二十七回 完”：用 TextMeshPro 实时文字显示，不烘焙进 CG。
+Toolbar / Panel / Button 的最终视觉统一属于 P9；P8 只需确保可读和功能可用。
+Noto 字体使用与许可（官方文档） — Noto 字体采用 SIL Open Font License，可用于数字产品和商业项目并可随应用分发；不得把字体本身单独出售。
+Kenney UI Pack — 若 P9 需要免费 UI 占位，Kenney 的游戏素材页采用 CC0，可商用且不要求署名。
+Kenney 许可说明 — 官方说明其游戏素材可用于商业项目、无需署名。
+11. 需要人工处理或用户自行解决的项目
+以下项目不建议直接依赖“AI 一次生成”或“素材站直接下载”；原因不是完全做不到，而是剧本对准确性/一致性的要求高，人工合成最稳。
+项目
+为什么不能直接拿成品
+建议解决方案
+用户需要确认
+M01 白骨脊梁“白骨夫人”四字
+AI 生成准确汉字不可靠；素材库也不会刚好有本项目所需骨骼刻字。
+生成无字骨骼 CG → 用 Noto Serif CJK SC / 自选授权字体做“白骨夫人”四字 → 透视贴合脊梁 → 做浅刻/阴影效果。
+必须由用户/美术最终确认位置确实在“脊梁”，不能放额头、石碑或法器。
+M02 四个悟空必须完全一致
+单次 AI 多人物生成常导致四张脸/服饰细节不一致。
+先生成并确认 1 个悟空完整姿态 → 抠图/镜像/轻微姿势变形复制成 4 个 → 在同一背景中排成四面辞拜构图。
+必须是“一真身 + 三分身”，总数正好四个。
+M03 贬书的文字内容
+剧本明确禁止伪造原著未载的贬书全文。AI 或素材库提供的可读文字都可能制造错误剧情信息。
+只显示纸、毛笔、墨迹与折纸；文字保持虚焦、局部遮挡或抽象笔画，不让玩家读到完整正文。
+如果以后决定展示确切字句，需要用户提供经核对的正式文案。
+M04 紧箍咒的具体念诵
+剧本要求只表现低声念诵与受痛，不编写原文未提供的咒语全文。
+使用不可辨识的低声 murmuring / breath / prayer ambience，或自行录制无明确词义的低声气音。
+若以后要真人配音，需要用户自行确定配音演员与台词边界。
+目前没有发现“既不能 AI 生成、也无法从授权素材库获得、且人工合成也无解”的绝对缺口。真正需要用户亲自决定的主要是：最终人物美术风格、贬书是否永远保持不可读、是否启用真人/AI 配音，以及 P9 的正式 UI 美术方向。
+12. 文件命名、导入规格与版权留档
+类型
+命名
+建议规格
+导入/制作注意
+背景
+bg_*.png / jpg
+2560×1440 母版；Unity 可用 1920×1080
+16:9；sRGB；无人物；不含文字
+立绘
+char_expression.png
+1536×2048 或更高
+透明 PNG；统一人物基线/裁切；不要留大面积空边
+CG
+cg_*.png
+2560×1440
+16:9；重要文本后期叠加
+Observe 特写
+obs_*.png
+1600×900 或 1920×1080
+清晰可放大；无 UI 框
+道具
+prop_*.png
+1024×1024
+透明 PNG；留边适中
+BGM
+bgm_*.wav/ogg
+48 kHz；母版 WAV，项目可转 OGG
+必须无缝循环；记录来源/许可
+Ambience
+amb_*.wav/ogg
+48 kHz
+循环点检查无爆音
+SE
+se_*.wav
+48 kHz
+短音效优先 WAV；统一响度后再导入
+12.1 授权留档建议
+项目内建立 Docs/ThirdPartyAssets.xlsx 或 ThirdPartyAssets.md，记录：文件名、原始网址、作者、下载日期、许可、是否修改、署名要求。
+AI 资源记录：服务/模型名称、生成日期、主要提示词、参考图来源、当时服务条款截图或链接。
+第三方素材下载后不要只保留文件；至少保存原素材页面 URL。Freesound / OpenGameArt 等逐条许可站点尤其需要。
+不要把网上找到的影视截图、电视剧造型、游戏立绘直接作为正式资源或 AI 参考图使用。
+13. 推荐制作顺序与验收清单
+先定 1 张背景 + 4 个主角角色圣经，确认全项目统一画风。
+完成 6 张核心背景；先不追求动态演出。
+完成主角四人的最低表情集，再完成妖影/女子/老妇/老翁。
+优先完成 S04、S09、S12 三组关键 CG，因为它们承载核心剧情信息和 Observe 交互。
+补 S06、S10、S11 CG；其余镜头能用背景+立绘表达的暂不新增 CG。
+音效从 Pixabay / Mixkit / Freesound 筛选并做统一响度；音乐先占位，等 DEFER-AUDIO-01 恢复测试后再正式定稿。
+完成人工合成项：白骨夫人四字、四悟空复制、贬书不可读字迹。
+所有资源映射到 PresentationController / AudioService 后，再开始把 S01–S12 批量写入 baigu_story_v2.json。
+验收维度
+通过标准
+视觉风格
+背景、立绘、CG 看起来属于同一作品；无现代影视造型复制
+角色一致性
+同一角色所有表情脸型、服装、比例一致
+剧情准确
+前两次棒击=元神先逃+假尸；第三次=真正断灵；无凯旋感
+文字准确
+“白骨夫人”四字人工叠加；贬书不显示伪造全文；“第二十七回 完”用 TMP
+交互准确
+I01/I02 只复看证据；I03 只停留听潮，不出现路线选择
+音频安全
+念诵不可辨识具体咒语；老妇哭声不新增具体台词
+授权
+每个第三方素材有 URL / 作者 / 许可记录；AI 资源有生成留档
+Unity 规格
+尺寸、透明通道、命名、循环点、压缩设置符合约定
+附录 A：本文依据与外部资源来源
+项目内容依据：
+《三打白骨精 视觉小说剧本》（用户提供 DOCX / Markdown），S01–S12、互动连接、美术与声音需求、改编取舍记录。
+《西游记》第二十七回“三打白骨精”原文（用户提供 TXT），用于对白与事件顺序核对。
+外部资源与许可页面（检索日期：2026-09-16）：
+Pixabay Content License（官方许可摘要） — 可免费使用、通常无需署名、可修改；不可把素材原样作为独立商品再分发。下载具体素材时仍应保存原页面与许可记录。
+Pixabay Sound Effects — 优先用于环境音和常见剧情音效。
+Pixabay - Wind — 山风/阴风检索。
+Pixabay - Horse — 马蹄、嘶鸣。
+Pixabay - Footsteps — 步伐/移动。
+Pixabay - Whoosh — 纵云、棒挥、转场气流。
+Pixabay - Stick Hit — 棒击/木质冲击。
+Pixabay - Frog — I01 蛙蟆。
+Pixabay - Paper — 纸张、折纸。
+Pixabay - Writing — 书写摩擦。
+Pixabay - Cry — 哭声；必须筛掉婴儿/现代环境，且不要使用含具体台词的哭喊。
+Pixabay - Chant — 低声念诵氛围；仅选不可辨具体咒语的氛围。
+Pixabay - Ocean — S12 海潮。
+Pixabay - Chinese Music — 可寻找中国风配乐占位或正式候选。
+Mixkit - Free Sound Effects — 常用音效，页面说明可用于商业/个人项目且无需署名；仍需查看具体许可。
+Mixkit - Free Stock Music — 可按 Traditional / World / Mysterious / Dramatic / Melancholic 等标签筛选。
+Mixkit License — 不同素材类型对应不同许可；下载前确认使用的是 Free License 项目。
+Freesound FAQ / Licenses — 补充找冷门拟音。每条声音许可不同；商业项目优先筛 CC0 或 CC-BY，避免 CC-BY-NC。
+OpenGameArt FAQ / Licenses — 可作为游戏音效/美术备选；逐项检查 CC0/CC-BY/其他许可，不建议不理解许可时使用 GPL/SA 类资源。

@@ -186,7 +186,7 @@ namespace BaiguVN
             if (current.type == "end")
             {
                 dialogueView.nextButton.interactable = false;
-                Debug.Log("测试剧情已经结束。");
+                Debug.Log("当前章节已经结束。");
                 return;
             }
 
