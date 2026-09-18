@@ -19,6 +19,10 @@ namespace BaiguVN
 
         public bool mainCompleted;
 
+        // 当前分支类别：main / perfect / fun / ""。
+        // fun = 娱乐线，不参与结局与成就记录。
+        public string branchKind = "";
+
         public GameState Clone()
         {
             GameState copy = new GameState();
@@ -69,6 +73,8 @@ namespace BaiguVN
             copy.completedChapters = new List<string>(completedChapters);
 
             copy.mainCompleted = mainCompleted;
+
+            copy.branchKind = branchKind;
 
             return copy;
         }
@@ -126,6 +132,8 @@ namespace BaiguVN
                 new List<string>(completedChapters);
 
             snapshot.mainCompleted = mainCompleted;
+
+            snapshot.branchKind = branchKind;
 
             return snapshot;
         }

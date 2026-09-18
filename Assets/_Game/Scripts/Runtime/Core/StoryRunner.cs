@@ -12,6 +12,7 @@ namespace BaiguVN
         [Header("UI")]
         public DialogueView dialogueView;
         public ObservationView observationView;
+        public ChoiceView choiceView;
 
         [Header("Presentation")]
         public PresentationController presentation;
@@ -89,6 +90,11 @@ namespace BaiguVN
             observationView.ObjectSelected += OpenObserve;
             observationView.ContinueSelected += ResumeObserve;
 
+            if (choiceView != null)
+            {
+                choiceView.ChoiceSelected += SelectChoice;
+            }
+
             // 注意：
             // 这里不自动 StartStory()
             // 因为现在游戏启动后由 TitlePanel 控制，
@@ -107,6 +113,11 @@ namespace BaiguVN
             {
                 observationView.ObjectSelected -= OpenObserve;
                 observationView.ContinueSelected -= ResumeObserve;
+            }
+
+            if (choiceView != null)
+            {
+                choiceView.ChoiceSelected -= SelectChoice;
             }
         }
 
@@ -192,6 +203,12 @@ namespace BaiguVN
 
             // observe 节点不用 NextButton 推进
             if (current.type == "observe")
+            {
+                return;
+            }
+
+            // choice 节点不用 NextButton 推进
+            if (current.type == "choice")
             {
                 return;
             }
@@ -287,6 +304,62 @@ namespace BaiguVN
             }
 
             GoTo(current.resume);
+        }
+
+        // =========================================================
+        // 分支选择
+        // =========================================================
+
+        public void SelectChoice(string choiceId)
+        {
+            // 演出期间不接受选择输入。
+            if (presentation != null &&
+                presentation.IsBusy)
+            {
+                return;
+            }
+
+            if (repository == null || state == null)
+            {
+                return;
+            }
+
+            VNNode current =
+                repository.Get(state.currentNodeId);
+
+            if (current.type != "choice")
+            {
+                Debug.LogError(
+                    $"当前节点 {current.id} 不是 choice 节点。"
+                );
+                return;
+            }
+
+            if (current.choices == null)
+            {
+                return;
+            }
+
+            foreach (VNChoice choice in current.choices)
+            {
+                if (choice.id == choiceId)
+                {
+                    // 记录当前分支类别。
+                    // fun 分支在结局/成就记录处会被拦截。
+                    if (!string.IsNullOrWhiteSpace(
+                        choice.kind))
+                    {
+                        state.branchKind = choice.kind;
+                    }
+
+                    GoTo(choice.next);
+                    return;
+                }
+            }
+
+            Debug.LogError(
+                $"choice 节点 {current.id} 找不到选项：{choiceId}"
+            );
         }
 
         private void EnsureProfileLoaded()
@@ -401,6 +474,12 @@ namespace BaiguVN
         private void UnlockMemorial(
             string memorialId)
         {
+            // 娱乐线不参与成就记录。
+            if (IsFunBranch)
+            {
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(
                 memorialId))
             {
@@ -438,6 +517,12 @@ namespace BaiguVN
         private void UnlockCollection(
             string collectionId)
         {
+            // 娱乐线不参与收藏记录。
+            if (IsFunBranch)
+            {
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(
                 collectionId))
             {
@@ -473,6 +558,15 @@ namespace BaiguVN
         // =========================================================
         // 完成当前节点
         // =========================================================
+
+        private bool IsFunBranch
+        {
+            get
+            {
+                return state != null &&
+                    state.branchKind == "fun";
+            }
+        }
 
         private void CompleteCurrentNode(
             VNNode node)
@@ -513,6 +607,12 @@ namespace BaiguVN
         private void RegisterCompletedChapter(
             VNNode node)
         {
+            // 娱乐线不参与结局记录。
+            if (IsFunBranch)
+            {
+                return;
+            }
+
             if (node == null ||
                 string.IsNullOrWhiteSpace(
                     node.completeChapter))
@@ -716,6 +816,23 @@ namespace BaiguVN
                     dialogueView.gameObject.SetActive(true);
 
                     dialogueView.Show(node);
+                    break;
+
+                case "choice":
+                    observationView.Hide();
+
+                    dialogueView.gameObject.SetActive(false);
+
+                    if (choiceView != null)
+                    {
+                        choiceView.Show(node);
+                    }
+                    else
+                    {
+                        Debug.LogError(
+                            "StoryRunner 没有指定 ChoiceView。"
+                        );
+                    }
                     break;
 
                 default:
@@ -979,6 +1096,11 @@ namespace BaiguVN
             restored.mainCompleted =
                 saved.mainCompleted;
 
+            restored.branchKind =
+                string.IsNullOrEmpty(saved.branchKind)
+                ? ""
+                : saved.branchKind;
+
             // -----------------------------------------------------
             // 整体替换当前状态
             // -----------------------------------------------------
@@ -1073,6 +1195,22 @@ namespace BaiguVN
                     dialogueView.CompleteTyping();
 
                     dialogueView.nextButton.interactable = false;
+                    break;
+
+                case "choice":
+                    dialogueView.gameObject.SetActive(false);
+                    observationView.Hide();
+
+                    if (choiceView != null)
+                    {
+                        choiceView.Show(node);
+                    }
+                    else
+                    {
+                        Debug.LogError(
+                            "StoryRunner 没有指定 ChoiceView。"
+                        );
+                    }
                     break;
 
                 default:

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(grep -o \"m_fontAsset: {fileID: [0-9]*, guid: [a-f0-9]*, type: 2}\" Assets/_Game/Scenes/VNMain.unity)"
+    ]
+  }
+}

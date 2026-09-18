@@ -127,7 +127,8 @@ namespace BaiguVN
                 if (node.type != "line"
                     && node.type != "observe"
                     && node.type != "pause"
-                    && node.type != "end")
+                    && node.type != "end"
+                    && node.type != "choice")
                 {
                     throw new Exception(
                         $"节点 {node.id} 的 type 无效：{node.type}"
@@ -162,6 +163,10 @@ namespace BaiguVN
                         ValidateObserveNode(ids, node);
                         break;
 
+                    case "choice":
+                        ValidateChoiceNode(ids, node);
+                        break;
+
                     case "end":
                         if (!string.IsNullOrEmpty(node.next))
                         {
@@ -171,6 +176,70 @@ namespace BaiguVN
                         }
                         break;
                 }
+            }
+        }
+
+        private void ValidateChoiceNode(
+            HashSet<string> ids,
+            VNNode node)
+        {
+            if (node.choices == null ||
+                node.choices.Length == 0)
+            {
+                throw new Exception(
+                    $"choice 节点 {node.id} 至少需要一个选项。"
+                );
+            }
+
+            HashSet<string> choiceIds =
+                new HashSet<string>();
+
+            foreach (VNChoice choice in node.choices)
+            {
+                if (choice == null)
+                {
+                    throw new Exception(
+                        $"choice 节点 {node.id} 存在空选项。"
+                    );
+                }
+
+                if (string.IsNullOrWhiteSpace(choice.id))
+                {
+                    throw new Exception(
+                        $"choice 节点 {node.id} 存在 id 为空的选项。"
+                    );
+                }
+
+                if (!choiceIds.Add(choice.id))
+                {
+                    throw new Exception(
+                        $"choice 节点 {node.id} 存在重复选项 ID：{choice.id}"
+                    );
+                }
+
+                if (string.IsNullOrWhiteSpace(choice.label))
+                {
+                    throw new Exception(
+                        $"choice 节点 {node.id} 的选项 {choice.id} 没有 label。"
+                    );
+                }
+
+                if (!string.IsNullOrWhiteSpace(choice.kind)
+                    && choice.kind != "main"
+                    && choice.kind != "perfect"
+                    && choice.kind != "fun")
+                {
+                    throw new Exception(
+                        $"choice 节点 {node.id} 的选项 {choice.id} kind 无效：{choice.kind}"
+                    );
+                }
+
+                ValidateTarget(
+                    ids,
+                    node.id,
+                    $"choices[{choice.id}].next",
+                    choice.next
+                );
             }
         }
 

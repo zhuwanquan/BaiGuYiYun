@@ -52,6 +52,10 @@ namespace BaiguVN
         public string collectionId;
 
         public VNObserveObject[] objects;
+
+        // choice 节点的选项列表。
+        // 只在 type == "choice" 时使用。
+        public VNChoice[] choices;
     }
 
     [Serializable]
@@ -60,6 +64,23 @@ namespace BaiguVN
         public string id;
         public string label;
         public string next;
+    }
+
+    [Serializable]
+    public class VNChoice
+    {
+        public string id;
+        public string label;
+        public string next;
+
+        // main = 原著线
+        // perfect = 完美线
+        // fun = 娱乐线（不参与结局/成就记录）
+        // 空 = 继承当前分支类别
+        public string kind;
+
+        // 可选显示标签，如「娱乐」「原著」。
+        public string tag;
     }
 
     [Serializable]
@@ -108,6 +129,10 @@ namespace BaiguVN
         public List<string> completedChapters = new List<string>();
 
         public bool mainCompleted;
+
+        // 当前分支类别：main / perfect / fun / ""。
+        // fun 分支不参与结局与成就记录。
+        public string branchKind = "";
     }
 
     [Serializable]
