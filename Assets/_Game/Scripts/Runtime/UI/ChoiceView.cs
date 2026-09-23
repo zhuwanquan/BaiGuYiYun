@@ -11,6 +11,7 @@ namespace BaiguVN
     /// <summary>A runtime-created, modal list of story choices.</summary>
     public sealed class ChoiceView : MonoBehaviour
     {
+        public Transform ControlsAbove { get; set; }
         private readonly List<Button> buttons = new List<Button>();
         private CanvasGroup canvasGroup;
         private TMP_FontAsset font;
@@ -263,6 +264,8 @@ namespace BaiguVN
             lastFocusedIndex = 0;
             gameObject.SetActive(true);
             transform.SetAsLastSibling();
+            if (ControlsAbove != null && ControlsAbove.parent == transform.parent)
+                ControlsAbove.SetAsLastSibling();
             promptText.text = prompt;
             scrollRect.StopMovement();
             content.anchoredPosition = Vector2.zero;

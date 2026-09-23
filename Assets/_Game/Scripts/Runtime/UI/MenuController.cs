@@ -278,17 +278,17 @@ namespace BaiguVN
 
         public void Back()
         {
+            // Closing a paused overlay must remain possible during an animation.
+            if (panelStack.Count > 0)
+            {
+                Pop();
+                return;
+            }
             // 演出 Busy 时，ESC / Back 暂时忽略。
             // 不打断 Fade，不修改演出状态。
             if (presentation != null &&
                 presentation.IsBusy)
             {
-                return;
-            }
-
-            if (panelStack.Count > 0)
-            {
-                Pop();
                 return;
             }
 
