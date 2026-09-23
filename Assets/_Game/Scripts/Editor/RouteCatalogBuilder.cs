@@ -19,6 +19,7 @@ namespace BaiguVN.Editor
         public const string OutputRoot = "Assets/Resources/Routes";
         public const string IndexPath = OutputRoot + "/index.json";
         public const string SharedPath = OutputRoot + "/shared.asset";
+        public const string SharedRuntimePath = OutputRoot + "/shared-library.asset";
         private const string ManifestPath = OutputRoot + "/generated-files.json";
         private static readonly UTF8Encoding Utf8 = new UTF8Encoding(false);
         private static readonly HashSet<string> WatchedAssets = new HashSet<string>(StringComparer.Ordinal);
@@ -31,11 +32,16 @@ namespace BaiguVN.Editor
             public int schemaVersion = 1;
             public string[] catalogPaths = Array.Empty<string>();
         }
-        private sealed class BuildPlan
+        private sealed class BuildPlan : IDisposable
         {
             public VNRouteIndex index;
             public readonly Dictionary<string, RouteResourceCatalog> catalogs = new Dictionary<string, RouteResourceCatalog>(StringComparer.Ordinal);
             public readonly HashSet<string> dependencies = new HashSet<string>(StringComparer.Ordinal);
+            public readonly List<RouteResourceCatalog> temporaryCatalogs = new List<RouteResourceCatalog>();
+            public void Dispose()
+            {
+                foreach (var catalog in temporaryCatalogs) UnityEngine.Object.DestroyImmediate(catalog);
+            }
         }
 
         static RouteCatalogBuilder()
@@ -57,29 +63,29 @@ namespace BaiguVN.Editor
         {
             if (rebuilding) { error = "路线目录正在生成，请等待本次更新完成。"; return false; }
             rebuilding = true;
+            var plan = new BuildPlan();
             try
             {
-                BuildPlan plan = ValidateSources();
+                ValidateSources(plan);
                 WriteOutputs(plan);
                 WatchedAssets.Clear(); WatchedAssets.UnionWith(plan.dependencies);
                 error = null; return true;
             }
             catch (Exception ex) { error = "路线目录未发布：" + ex.Message; return false; }
-            finally { rebuilding = false; }
+            finally { plan.Dispose(); rebuilding = false; }
         }
 
-        private static BuildPlan ValidateSources()
+        private static void ValidateSources(BuildPlan plan)
         {
             Require(Directory.Exists(SourceRoot), "找不到路线源目录：" + SourceRoot);
             Require(File.Exists(StoryPath), "找不到主剧本：" + StoryPath);
             VNStory story = ReadJson<VNStory>(StoryPath);
             var published = new List<VNRoute>();
             var ids = new HashSet<string>(StringComparer.Ordinal);
-            var plan = new BuildPlan();
-            RouteResourceCatalog shared = AssetDatabase.LoadAssetAtPath<RouteResourceCatalog>(SharedPath);
-            Require(RouteResourceCatalog.Validate(shared, out string sharedError, false), SharedPath + "：" + sharedError);
+            var library = ResourceLibraryDatabase.Scan();
+            RouteResourceCatalog shared = CombineResources(plan, library, "shared", SharedPath, true);
             var common = MakeResourceIndex(shared);
-            AddDependencies(plan, SharedPath);
+            plan.catalogs.Add(SharedRuntimePath, shared);
 
             foreach (string folder in Directory.GetDirectories(SourceRoot).OrderBy(p => p, StringComparer.Ordinal))
             {
@@ -95,8 +101,7 @@ namespace BaiguVN.Editor
 
                 Require(route.artReviewed, "美术尚未确认完成：" + route.routeId);
                 string catalogPath = Normalize(folder) + "/resource-catalog.asset";
-                RouteResourceCatalog local = AssetDatabase.LoadAssetAtPath<RouteResourceCatalog>(catalogPath);
-                Require(RouteResourceCatalog.Validate(local, out string localError, false), route.routeId + "：" + localError);
+                RouteResourceCatalog local = CombineResources(plan, library, route.routeId, catalogPath, false);
                 var available = new Dictionary<string, RouteResourceEntry>(common, StringComparer.Ordinal);
                 foreach (RouteResourceEntry entry in local.entries)
                 {
@@ -117,7 +122,6 @@ namespace BaiguVN.Editor
                 route.resourceCatalogPath = "Routes/" + route.routeId;
                 published.Add(route);
                 plan.catalogs.Add(OutputRoot + "/" + route.routeId + ".asset", local);
-                AddDependencies(plan, catalogPath);
             }
 
             Require(published.Count(r => r.kind == RouteKinds.Canonical) <= 1, "只能发布一条原著路线。");
@@ -139,7 +143,29 @@ namespace BaiguVN.Editor
                 foreach (VNNode node in route.nodes ?? Array.Empty<VNNode>())
                     Require(reachable.Contains(node.id), "正式路线有无法从入口到达的节点：" + route.routeId + "/" + node.id);
             }
-            return plan;
+        }
+        private static RouteResourceCatalog CombineResources(BuildPlan plan, LibrarySnapshot library,
+            string scope, string legacyPath, bool requireLegacy)
+        {
+            var entries = new List<RouteResourceEntry>();
+            if (requireLegacy || File.Exists(legacyPath))
+            {
+                var legacy = AssetDatabase.LoadAssetAtPath<RouteResourceCatalog>(legacyPath);
+                Require(RouteResourceCatalog.Validate(legacy, out string error), legacyPath + "：" + error);
+                entries.AddRange(legacy.entries);
+                AddDependencies(plan, legacyPath);
+            }
+            Require(library.TryResolveScope(scope, out RouteResourceEntry[] namedEntries, out string[] errors),
+                "资源库 " + scope + " 无法入库：" + string.Join("；", errors ?? Array.Empty<string>()));
+            entries.AddRange(namedEntries);
+            Require(RouteResourceCatalog.ValidateEntries(entries, out string duplicateError),
+                scope + " 资源合并失败（旧手工登记与自动入库也不能重复 ID）：" + duplicateError);
+            foreach (var record in library.Query(scope)) AddDependencies(plan, record.Path);
+            var catalog = ScriptableObject.CreateInstance<RouteResourceCatalog>();
+            plan.temporaryCatalogs.Add(catalog);
+            catalog.name = scope;
+            catalog.entries = entries.OrderBy(e => e.id, StringComparer.Ordinal).ToArray();
+            return catalog;
         }
         private static Dictionary<string, RouteResourceEntry> MakeResourceIndex(RouteResourceCatalog catalog)
         {
@@ -261,12 +287,12 @@ namespace BaiguVN.Editor
             return !string.IsNullOrEmpty(path) && path == Normalize(path)
                 && Path.GetDirectoryName(path)?.Replace('\\', '/') == OutputRoot
                 && path.EndsWith(".asset", StringComparison.Ordinal)
-                && IsRouteId(Path.GetFileNameWithoutExtension(path));
+                && (path == SharedRuntimePath || IsRouteId(Path.GetFileNameWithoutExtension(path)));
         }
         private static bool IsRouteId(string id)
         {
             return id != null && Regex.IsMatch(id, "^[a-z][a-z0-9_-]*$")
-                && id != "shared" && id != "index" && id != "generated-files";
+                && id != "shared" && id != "shared-library" && id != "index" && id != "generated-files";
         }
         private static T ReadJson<T>(string path) where T : class
         {
@@ -284,7 +310,7 @@ namespace BaiguVN.Editor
         internal static void NotifyAssetsChanged(IEnumerable<string> paths)
         {
             if (rebuilding) return;
-            if (paths.Any(p => p == StoryPath || p == SharedPath || p == SourceRoot
+            if (paths.Any(p => p == StoryPath || p == SharedPath || p == SourceRoot || ResourceNaming.IsManagedPath(p)
                 || p.StartsWith(SourceRoot + "/", StringComparison.Ordinal) || WatchedAssets.Contains(p))) QueueRebuild();
         }
         private static void QueueRebuild()

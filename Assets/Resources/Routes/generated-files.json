@@ -1,6 +1,7 @@
 {
     "schemaVersion": 1,
     "catalogPaths": [
-        "Assets/Resources/Routes/canonical.asset"
+        "Assets/Resources/Routes/canonical.asset",
+        "Assets/Resources/Routes/shared-library.asset"
     ]
 }

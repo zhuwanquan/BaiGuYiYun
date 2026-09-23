@@ -33,7 +33,8 @@ namespace BaiguVN
         private void InitializeRoutePresentation()
         {
             routeResources = new RouteResourceService();
-            var shared = Resources.Load<RouteResourceCatalog>("Routes/shared");
+            var shared = Resources.Load<RouteResourceCatalog>("Routes/shared-library")
+                ?? Resources.Load<RouteResourceCatalog>("Routes/shared");
             if (shared != null) routeResources.SetShared(shared);
             presentation?.SetResourceService(routeResources);
             audioService?.SetResourceService(routeResources);

@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e82a3cbcb4684a3baa3cd3a6f9d3e629, type: 3}
+  m_Name: shared-library
+  m_EditorClassIdentifier: Assembly-CSharp::BaiguVN.RouteResourceCatalog
+  entries:
+  - id: amb_mountain_wind
+    kind: ambience
+    sprite: {fileID: 0}
+    clip: {fileID: 8300000, guid: 7ef61ce5218d51d4cb5f29d62fd081af, type: 3}
+    placeholder: 0
+  - id: bg_forest
+    kind: background
+    sprite: {fileID: 3301354838493240256, guid: 0196a860303383143be901f311becc54, type: 3}
+    clip: {fileID: 0}
+    placeholder: 0
+  - id: bg_mountain
+    kind: background
+    sprite: {fileID: 21300000, guid: 43de4c15d0eeb92439fd4be1f3f8a7ff, type: 3}
+    clip: {fileID: 0}
+    placeholder: 0
+  - id: bg_peach_stream
+    kind: background
+    sprite: {fileID: -6031909758995611391, guid: ded0a84bb548964469e7b74d4d0c2036, type: 3}
+    clip: {fileID: 0}
+    placeholder: 0
+  - id: bgm_mountain
+    kind: bgm
+    sprite: {fileID: 0}
+    clip: {fileID: 8300000, guid: 10abeb7d62f56944ba6a081287d4eb59, type: 3}
+    placeholder: 0
+  - id: se_click
+    kind: se
+    sprite: {fileID: 0}
+    clip: {fileID: 8300000, guid: 96a295ba4c0251345855d417968d3a33, type: 3}
+    placeholder: 0
+  - id: se_impact
+    kind: se
+    sprite: {fileID: 0}
+    clip: {fileID: 8300000, guid: 91a832096fa95fb449849f487c94935c, type: 3}
+    placeholder: 0
+  - id: se_staff_swing
+    kind: se
+    sprite: {fileID: 0}
+    clip: {fileID: 8300000, guid: 995d0e5b06e23164c9f60151cdd341bf, type: 3}
+    placeholder: 0
+  - id: se_step_gravel
+    kind: se
+    sprite: {fileID: 0}
+    clip: {fileID: 8300000, guid: aad374630facf8340a30d909a2557b10, type: 3}
+    placeholder: 0
+  - id: se_wind
+    kind: se
+    sprite: {fileID: 0}
+    clip: {fileID: 8300000, guid: 2ba0e44d60060464990e4b7f2b3b73e9, type: 3}
+    placeholder: 0
+  - id: tangseng_neutral
+    kind: portrait
+    sprite: {fileID: 6131821140394784414, guid: 57c53abe354f8c842a73f31887b5135b, type: 3}
+    clip: {fileID: 0}
+    placeholder: 0
+  - id: tangseng_smile
+    kind: portrait
+    sprite: {fileID: 5672687030486897652, guid: 51eb85f79909fb34a983e4544cdee705, type: 3}
+    clip: {fileID: 0}
+    placeholder: 0
+  - id: wukong_neutral
+    kind: portrait
+    sprite: {fileID: -7441660838408181414, guid: 18d11c998275b464ebf5c86f43820bec, type: 3}
+    clip: {fileID: 0}
+    placeholder: 0
+  - id: wukong_smile
+    kind: portrait
+    sprite: {fileID: -7479031182607403508, guid: f6a650e4f71650e4c8b48987dd1f5ccd, type: 3}
+    clip: {fileID: 0}
+    placeholder: 0
