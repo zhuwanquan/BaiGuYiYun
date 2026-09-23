@@ -24,6 +24,11 @@ namespace BaiguVN
         public string next;
         public string resume;
 
+        public string choiceGroupId;
+        public VNChoice[] choices;
+        public VNVisualAction[] actions;
+        public string resultId;
+
         public string backgroundId;
         public string cgId;
 
