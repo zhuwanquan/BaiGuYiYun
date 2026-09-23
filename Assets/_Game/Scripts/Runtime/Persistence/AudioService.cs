@@ -12,6 +12,8 @@ namespace BaiguVN
 
     public class AudioService : MonoBehaviour
     {
+        private RouteResourceService routeResources;
+        public void SetResourceService(RouteResourceService service) { routeResources = service; }
         [Header("Audio Sources")]
         public AudioSource bgmSource;
         public AudioSource seSource;
@@ -74,7 +76,7 @@ namespace BaiguVN
             }
 
             AudioClip clip =
-                FindClip(bgmClips, id);
+                FindClip(bgmClips, id, "bgm");
 
             if (clip == null)
             {
@@ -129,7 +131,7 @@ namespace BaiguVN
             }
 
             AudioClip clip =
-                FindClip(seClips, id);
+                FindClip(seClips, id, "se");
 
             if (clip == null)
             {
@@ -171,7 +173,7 @@ namespace BaiguVN
             }
 
             AudioClip clip =
-                FindClip(ambienceClips, id);
+                FindClip(ambienceClips, id, "ambience");
 
             if (clip == null)
             {
@@ -222,9 +224,10 @@ namespace BaiguVN
         // =========================================================
 
         private AudioClip FindClip(
-            VNAudioEntry[] entries,
-            string id)
+            VNAudioEntry[] entries, string id, string kind)
         {
+            if (routeResources != null)
+                return routeResources.GetAudio(id, kind);
             if (entries == null)
             {
                 return null;

@@ -43,6 +43,10 @@ namespace BaiguVN
         [SerializeField, Min(0f)]
         private float backgroundFadeSeconds = 0.35f;
         public bool IsBusy { get; private set; }
+        private RouteResourceService routeResources;
+        private bool menuPaused;
+        public void SetResourceService(RouteResourceService service) { routeResources = service; }
+        public void SetPaused(bool paused) { menuPaused = paused; }
 
         private int activePresentationOperationCount;
 
@@ -92,7 +96,7 @@ namespace BaiguVN
             }
 
             Sprite sprite =
-                FindSprite(backgrounds, id);
+                FindSprite(backgrounds, id, "background");
 
             if (sprite == null)
             {
@@ -137,7 +141,7 @@ namespace BaiguVN
             }
 
             Sprite targetSprite =
-                FindSprite(backgrounds, id);
+                FindSprite(backgrounds, id, "background");
 
             if (targetSprite == null)
             {
@@ -186,7 +190,7 @@ namespace BaiguVN
             }
 
             Sprite sprite =
-                FindSprite(portraits, id);
+                FindSprite(portraits, id, "portrait");
 
             if (sprite == null)
             {
@@ -461,7 +465,7 @@ namespace BaiguVN
             }
 
             Sprite sprite =
-                FindSprite(cgs, id);
+                FindSprite(cgs, id, "cg");
 
             if (sprite == null)
             {
@@ -502,7 +506,7 @@ namespace BaiguVN
 
             // 显示 CG
             Sprite targetSprite =
-                FindSprite(cgs, id);
+                FindSprite(cgs, id, "cg");
 
             if (targetSprite == null)
             {
@@ -639,9 +643,10 @@ namespace BaiguVN
         // =========================================================
 
         private Sprite FindSprite(
-            VNSpriteEntry[] entries,
-            string id)
+            VNSpriteEntry[] entries, string id, string kind)
         {
+            if (routeResources != null)
+                return routeResources.GetSprite(id, kind);
             if (entries == null)
             {
                 return null;
@@ -671,9 +676,7 @@ namespace BaiguVN
 
             Sprite sprite =
                 FindSprite(
-                    portraits,
-                    portraitId
-                );
+                    portraits, portraitId, "portrait");
 
             if (sprite == null)
             {
@@ -784,7 +787,7 @@ namespace BaiguVN
 
             while (elapsed < duration)
             {
-                elapsed += Time.unscaledDeltaTime;
+                elapsed += menuPaused ? 0f : Time.unscaledDeltaTime;
 
                 float t = Mathf.Clamp01(
                     elapsed / duration);
@@ -835,7 +838,7 @@ namespace BaiguVN
             while (elapsed < duration)
             {
                 elapsed +=
-                    Time.unscaledDeltaTime;
+                    menuPaused ? 0f : Time.unscaledDeltaTime;
 
                 float t = Mathf.Clamp01(
                     elapsed / duration);

@@ -25,7 +25,8 @@ namespace BaiguVN
             Add(refs, visuals.backgroundId, "background"); Add(refs, visuals.cgId, "cg");
             Add(refs, visuals.leftPortraitId, "portrait"); Add(refs, visuals.centerPortraitId, "portrait"); Add(refs, visuals.rightPortraitId, "portrait");
             Add(refs, visuals.bgmId, "bgm"); Add(refs, visuals.ambienceId, "ambience");
-            // Persistent props are appended by the save integration.
+            if (visuals.props != null) foreach (var prop in visuals.props)
+                if (prop != null) Add(refs, prop.assetId, "prop");
             return refs;
         }
         private static void Add(List<KeyValuePair<string, string>> refs, string id, string kind)
