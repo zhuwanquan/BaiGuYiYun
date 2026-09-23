@@ -1,0 +1,20 @@
+{
+    "schemaVersion":  1,
+    "routeId":  "perfect",
+    "kind":  "perfect",
+    "choiceGroupId":  "first_encounter",
+    "title":  "完美线（待编写）",
+    "choiceText":  "先不动手，设法让师父亲眼识破妖怪。",
+    "order":  10,
+    "status":  "draft",
+    "entryNode":  "",
+    "contentRevision":  1,
+    "artReviewed":  false,
+    "resourceCatalogPath":  "",
+    "requiredAssets":  [
+
+                       ],
+    "nodes":  [
+
+              ]
+}

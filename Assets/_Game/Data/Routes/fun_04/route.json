@@ -1,0 +1,23 @@
+{
+    "schemaVersion":  1,
+    "routeId":  "fun_04",
+    "kind":  "entertainment",
+    "choiceGroupId":  "first_encounter",
+    "title":  "娱乐路线04（待编写）",
+    "choiceText":  "",
+    "order":  104,
+    "status":  "draft",
+    "entryNode":  "",
+    "contentRevision":  1,
+    "artReviewed":  false,
+    "resourceCatalogPath":  "",
+    "requiredAssets":  [
+                           {
+                               "id":  "fun_04_identity_neutral",
+                               "kind":  "portrait"
+                           }
+                       ],
+    "nodes":  [
+
+              ]
+}

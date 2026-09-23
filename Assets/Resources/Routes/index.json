@@ -1,0 +1,21 @@
+{
+    "schemaVersion": 1,
+    "routes": [
+        {
+            "schemaVersion": 1,
+            "routeId": "canonical",
+            "kind": "canonical",
+            "choiceGroupId": "first_encounter",
+            "title": "原著线",
+            "choiceText": "识破伪装，挥棒护住师父。",
+            "order": 0,
+            "status": "published",
+            "entryNode": "ch27_s04_001",
+            "contentRevision": 1,
+            "artReviewed": true,
+            "resourceCatalogPath": "Routes/canonical",
+            "requiredAssets": [],
+            "nodes": []
+        }
+    ]
+}
