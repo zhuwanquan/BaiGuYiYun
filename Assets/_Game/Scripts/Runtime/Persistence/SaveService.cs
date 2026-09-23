@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -37,6 +38,15 @@ namespace BaiguVN
         {
             string path = GetSlotPath(slot);
             return File.Exists(path) || File.Exists(path + ".bak");
+        }
+
+        // Keep an immutable recovery copy; normal rotating .bak files are not enough.
+        public void PreserveSlot(int slot)
+        {
+            string path = GetSlotPath(slot);
+            string suffix = ".preserved-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss") + "-" + Guid.NewGuid().ToString("N") + ".json";
+            if (File.Exists(path)) File.Copy(path, path + suffix, false);
+            if (File.Exists(path + ".bak")) File.Copy(path + ".bak", path + ".bak" + suffix, false);
         }
 
         public void SaveSlot(
@@ -273,11 +283,14 @@ namespace BaiguVN
             }
             if (snapshot.visuals != null && snapshot.visuals.props != null)
             {
+                HashSet<string> instanceIds = new HashSet<string>(StringComparer.Ordinal);
                 foreach (VNPropState prop in snapshot.visuals.props)
                 {
                     if (prop == null || string.IsNullOrWhiteSpace(prop.instanceId) ||
+                        prop.instanceId == "*" || !instanceIds.Add(prop.instanceId) ||
                         string.IsNullOrWhiteSpace(prop.assetId) ||
-                        !IsFinite(prop.x) || !IsFinite(prop.y) || !IsFinite(prop.scale))
+                        !IsFinite(prop.x) || !IsFinite(prop.y) || !IsFinite(prop.scale) ||
+                        prop.scale <= 0 || prop.scale > 10)
                     {
                         error = "存档的画面道具状态损坏。";
                         return false;
