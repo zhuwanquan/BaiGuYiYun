@@ -1,70 +1,70 @@
-# 路线剧本与美术的维护方法
+# 路线剧本与美术维护入口
 
-这里保存作者维护的路线源文件。游戏菜单由生成器读取这些文件创建，不需要手工增减按钮。
+每个直属子目录代表一条路线，`route.json` 是作者维护的主文件。菜单从已发布的路线自动生成；新增素材采用文件命名入库流程。
 
-目前的内容状态：
+完整说明见[多选项与美术接入指南](../../../../Docs/多选项与美术接入指南.md)，命名细节见[美术资源命名与自动入库规则](../../../../Docs/美术资源命名与自动入库规则.md)。
 
-- `canonical`：唯一已发布的原著路线，入口为主剧本的 `ch27_s04_001`，复用原著后续节点。
-- `perfect`：完美路线草稿，剧情尚未接入。
-- `fun_01` 至 `fun_12`：十二条娱乐路线草稿。每条都预留一个专用变身立绘资源要求，但没有编造剧情、可点击空路线或假通关。
+## 当前保留的内容
 
-草稿不出现在正式菜单里。只有剧本与必需美术都准备好的路线才能发布；十二条草稿不等于十二条已经可玩的娱乐路线。
+| 路线 | 状态 | 内容 |
+| --- | --- | --- |
+| `canonical` | `published` | 原著线，入口 `ch27_s04_001`，复用主线后续正文 |
+| `perfect` | `draft` | 完美线预留位置，待补正式剧情 |
+| `fun_01`—`fun_12` | `draft` | 十二条娱乐路线预留位置，待补剧本及对应美术 |
 
-## 一条路线的内容包
+十二个草稿没有伪造可玩的故事，正式菜单不会显示空路线。每条娱乐草稿要求一张新身份立绘，例如 `fun_01__portrait__wukong_identity__neutral`；旧兼容目录的 `entries` 已清空。
+
+## 新增路线：先 JSON，再按名放图
+
+1. 停止 Play，在 Unity Project 窗口复制草稿目录或创建 `fun_13`。将目录名与 `routeId` 保持一致，使用[完整 JSON 模板](../../../../ResourcePreparation/Templates/route.example.json)填写内容。
+2. 娱乐线填写 `kind: "entertainment"`、`choiceGroupId: "first_encounter"`；填写 `title`、`choiceText`、`order`，保留 `status: "draft"` 和 `artReviewed: false`。
+3. 填写 `entryNode` 与 `nodes`，每个节点 ID 全局唯一；补齐所有跳转与通关结尾。普通 TXT 剧本需要先整理成这个结构，不会直接自动解析成选项。
+4. 按命名规则把美术和音频放到自动资源库，返回 Unity 完成导入。复制模板时同步修改路线、节点和资源 ID 中的前缀。
+5. 在 `BaiguVN → Resources → Query Resource Library` 查询本路线素材，把精确资源 ID 写进剧情字段、动作及 `requiredAssets`。
+6. 剧本与必需资源全部准备好并检查美术后，设 `artReviewed: true`、`status: "published"`，运行 `BaiguVN → Routes → Rebuild Published Catalog`。
+7. 从正常游戏入口验收新增选项、画面、存读档与通关，再将源文件、`.meta` 和生成输出一起做本地 Git 提交。
+
+不要为凑选项数量发布未完成草稿。按钮数量随已发布路线增减，没有写死为十二个。
+
+## 文件名就是资源 ID
 
 ```text
-fun_01/
-  route.json                 剧情、入口、选项文字、资源要求
-  resource-catalog.asset     这条路线专用的美术与音频引用
-  Art/                      按实际需要放立绘、表情、CG、背景、道具或特效图
-  Audio/                    可选的音效、音乐、环境声
+Assets/_Game/ResourceLibrary/<scope>/<kind>/<scope>__<kind>__<subject>__<variant>.<ext>
 ```
 
-`Art`、`Audio` 是建议的源素材目录，不要求空目录都建立。师徒原有立绘与共用背景可以复用，不需要每条路线都重画。公共资源登记在 `Assets/Resources/Routes/shared.asset`。美术源文件应保留在 `Assets/_Game` 等作者目录，生成的 Resources 目录只负责引用它们。
+例如 `fun_01` 的新身份立绘：
 
-每张立绘或表情使用独立、稳定的资源 ID。不同种类也不能共用同一个 ID；路线专用 ID 不得与共享目录冲突。
+```text
+Assets/_Game/ResourceLibrary/fun_01/portrait/fun_01__portrait__wukong_identity__neutral.png
+```
 
-## 新增一条娱乐路线
+它的 ID 为 `fun_01__portrait__wukong_identity__neutral`。`portraitId`、`transform.assetId`、`requiredAssets` 均使用这个 ID，不带目录或扩展名。
 
-1. 在 Unity 的 Project 窗口复制一个草稿目录，例如将副本命名为 `fun_13`。使用 Unity 复制，避免手工复制 `.meta` 导致 GUID 重复。
-2. 修改 `route.json` 的 `routeId`，使它与目录名一致；填写 `title` 和玩家实际看到的 `choiceText`，用 `order` 控制菜单顺序。新增数量没有写死在代码里。
-3. 保持 `kind: "entertainment"`、`choiceGroupId: "first_encounter"`、`status: "draft"`。填写真实 `entryNode` 与 `nodes`，让剧情最终到达 `type: "end"` 的节点，或接入已有共同收束。节点 ID 必须全局唯一。
-4. 把新身份立绘等素材导入 Unity。用于画面的图片须作为 Sprite 导入；将 Sprite 拖入 `resource-catalog.asset` 的 `sprite` 字段，将音频拖入 `clip` 字段，填写对应的业务 ID 与 `kind`。仅把图片放进文件夹不会自动知道它代表哪个身份或表情。
-5. 更新模板中形如 `fun_01_identity_neutral` 的资源 ID，让 `requiredAssets`、资源目录和剧本里的引用一致。正式图片接入后取消 `placeholder`；按剧情继续增加表情、CG、背景、道具和特效图。音乐和音效只有在剧本实际使用或要求时才是必需资源。
-6. 剧本完成、美术已检查后，将 `artReviewed` 设为 `true`，再把 `status` 改为 `published`。保存并返回 Unity 后会自动校验、同步菜单；也可运行 `BaiguVN → Routes → Rebuild Published Catalog`。
+- `scope` 为 `shared` 或路线 ID；目录与文件名中的 scope、kind 必须一致，不能再嵌套子目录。
+- `subject`、`variant` 只用小写英文字母、数字和单下划线；四段间用双下划线。
+- `portrait`、`prop`、`effect` 使用 PNG；`background`、`cg` 支持 PNG／JPG／JPEG；`bgm`、`se`、`ambience` 使用 WAV／OGG。
+- 命名素材自动登记。新路线的 `resource-catalog.asset` 可完全省略；已经存在的旧手工登记文件继续参与兼容合并，但不能与自动库重复 ID。
+- 共享旧图仍由 `Assets/Resources/Routes/shared.asset` 兼容维护，不要求改名。新公共素材放自动库的 `shared` scope；生成器合并成运行时使用的 `shared-library.asset`。
 
-对剧本节点引用的资源，生成器会自动检查。`requiredAssets` 还能列出这条路线必须交付的额外资源；不必为了校验把每次重复使用同一图片的节点再登记一遍。
+查询窗口的“导出索引 JSON”会保存本地元数据到 `Library/BaiguVN/resource-library-index.json`。运行时按 ID 和 kind 精确查询已生成字典，不运行 SQL 服务，也不把索引上传云端。
 
-资源 `kind` 支持：`background`、`portrait`、`cg`、`prop`、`effect`、`bgm`、`se`、`ambience`。
+## 剧情与演出边界
 
-## 如何在剧本中使用画面
+首次出手前的 `first_encounter` 收集整条路线。后续三次打妖怪、三次解释的位置，可在路线内增加普通 `choice` 节点：不填 `choiceGroupId`，在 `choices` 中填写各项 `id`、`label`、`next` 并补齐正文。
 
-普通对白节点可以填写 `portraitId`、`portraitSlot`、`backgroundId`、`cgId`；音频使用 `bgmId`、`seId`、`ambienceId`。立绘槽位为左 `0`、中 `1`、右 `2`。
+内部选项始终继承本路线身份，不能跳进另一条路线的私有节点或返回首次路线菜单。娱乐线可正常通关与保存，但不参加正式章节、跨轮已读、纪念、收藏、多结局或成就记录；复用共同结尾也不改变这一点。
 
-需要变身、闪白、震动、道具等演出时，在节点的 `actions` 中登记动作配置，并为动作引用的资源登记业务 ID。动作类型与字段以 `Scripts/Runtime/Data/RouteData.cs` 为准，不要只在备注里写“这里变身”。同一槽位直接换立绘与播放带遮挡的变身演出是两种不同的表现，需按真实剧本选择。
+普通画面使用 `portraitId`、`backgroundId`、`cgId`；变化过程与道具使用 `actions`。动作字段参考完整模板和 `Scripts/Runtime/Data/RouteData.cs`。`artReviewed` 是人工确认，不会自动补图或判断图画得是否正确。
 
-`type: "end"` 表示这次路线正常结束。娱乐路线也可以正常通关；其路线身份由运行系统保留，不应通过改成原著或完美类型来获得结局、成就或收藏记录。
+## 下架、修改与存档
 
-## 草稿、停用与删除
+- 将 `status` 改为 `draft`／`disabled`，或移除该路线的 `route.json`，重建后自动减少选项。源素材不会随下架被删除。
+- 共享资源或已发布路线出现命名、重复、缺图或跳转错误时，整次发布停止并保留旧输出，同时阻止使用过期目录进入 Play 或构建。
+- 改菜单文字与顺序时保留 `routeId`；同一表情重绘时保留文件名、资源 ID 和 `.meta`。真正不同的剧情节点或变体使用新 ID。
+- `contentRevision` 记录剧情修订，不是单独增加数字就强制回档。路线、节点或资源失效时，旧存档会提示并尝试恢复首次选择前快照；没有可用检查点则回到开场，读取不覆盖原存档。
+- 画面演出稳定后再存档；恢复的是最终立绘、背景、CG、道具与音乐状态，不重放短暂特效。
+- 更新以停止 Play、编辑重建、重新进入为界；玩家版本需要重新构建分发，没有线上即时热更新。
 
-- `draft`：可以缺剧情入口、正文和美术；不输出正式选项，也不检查这些发布条件。目录名、路线 ID、状态及 JSON 语法仍必须正确。
-- `disabled`：暂时停用，同样不输出正式选项，源文件和美术仍保留。
-- `published`：必须有有效入口、可通关路径、完整且可到达的专用节点、已确认的美术及有效资源引用。占位图、缺失资源、重复 ID 或断开的跳转会阻止整次生成，不会偷偷发布其余部分。
+`Assets/Resources/Routes/index.json`、`<routeId>.asset`、`shared-library.asset`、`generated-files.json` 均为生成输出，不手改。`shared.asset` 是作者维护的旧共享兼容文件，生成器不覆盖或删除。
 
-删除 `route.json`、停用路线或移走整个路线内容包后，重新加载／发布会同步移除选项。游戏正在运行时不要指望选项即时变化；停止运行后编辑、校验，再重新进入。
-
-生成器只清理它自己记录的 `Assets/Resources/Routes/<routeId>.asset`，从不删除共享目录或作者美术。手工删除源素材前，先检查其他路线是否仍在使用它。
-
-## 更新图片与兼容存档
-
-同一个身份的图片重绘时保留资源 ID，通过原有登记项换图。移动 Unity 素材时保留 `.meta`。只是调整菜单顺序或文字时不要改路线 ID。
-
-剧情节点结构、入口或含义改变后，提高 `contentRevision`；不要把旧节点 ID 分配给完全不同的剧情。删除路线或节点后的旧存档由运行系统提示并恢复到有效选择点，不能靠选项在列表中的序号猜测原来的路线。
-
-## 不要编辑生成目录
-
-`Assets/Resources/Routes/index.json` 只包含已发布路线；`<routeId>.asset` 为资源引用副本；`generated-files.json` 记录可安全清理的生成文件。这些文件会被重建，应随对应源文件一起纳入本地版本记录。
-
-`shared.asset` 是例外：它是作者维护的公共资源目录，生成器只读取、校验，不覆盖或删除。
-
-校验失败时旧生成目录会保留供恢复，同时显示明确错误，并阻止用过期目录进入运行模式或构建游戏。修复源文件后重新生成，不要通过手改生成的菜单 JSON 绕过检查。
+接入后的检查方法见完整指南：重点验证选项增减、长列表、正确出图、缺图阻止发布、存档恢复及娱乐线记录隔离。本说明不宣称本轮新集成测试已经全部通过。
