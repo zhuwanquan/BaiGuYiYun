@@ -52,6 +52,11 @@ namespace BaiguVN
                 }
             }
             Require(HasNode(story.startNode), "startNode 不存在：" + story.startNode);
+            foreach (var group in routes.Values.GroupBy(r => r.choiceGroupId))
+            {
+                Require(group.Count(r => r.kind == RouteKinds.Canonical) <= 1, "同一选项组只能发布一条原著线：" + group.Key);
+                Require(group.Count(r => r.kind == RouteKinds.Perfect) <= 1, "同一选项组只能发布一条完美线：" + group.Key);
+            }
             foreach (var node in nodes.Values) ValidateNode(node);
             foreach (var route in routes.Values)
             {
@@ -107,6 +112,9 @@ namespace BaiguVN
         }
         private void ValidateNode(VNNode node)
         {
+            Require(node.focusSlot >= -1 && node.focusSlot <= 2, "聚焦槽位无效：" + node.id);
+            if (StoryAssetReferences.IsReference(node.portraitId) || node.portraitId == "@clear")
+                Require(node.portraitSlot >= 0 && node.portraitSlot <= 2, "立绘槽位无效：" + node.id);
             Require(node.type == "line" || node.type == "pause" || node.type == "end" || node.type == "observe" || node.type == "choice", "无效节点类型：" + node.id);
             if (node.type == "end" || node.type == "choice") Require(string.IsNullOrEmpty(node.next), "结束/选择节点不能设置 next：" + node.id);
             if (node.type == "choice")
@@ -129,6 +137,8 @@ namespace BaiguVN
                     Require(owners[target] == null || owners[target] == owners[node.id], "不允许跨路线进入私有节点：" + node.id);
             }
             foreach (var action in node.actions ?? Array.Empty<VNVisualAction>()) ValidateAction(node.id, action);
+            if (node.actions != null && !string.IsNullOrEmpty(node.portraitId))
+                Require(!node.actions.Any(a => a.type == "transform" && (node.portraitId == "-" || a.slot == node.portraitSlot)), "同一节点不能同时直接替换和变身同一立绘槽：" + node.id);
         }
         private void ValidateCompletion(string start, string routeId)
         {
@@ -157,9 +167,14 @@ namespace BaiguVN
         private static void ValidateAction(string node, VNVisualAction action)
         {
             Require(action != null && Finite(action.duration) && action.duration >= 0 && action.duration <= 10, "演出时长无效：" + node);
+            Require(Finite(action.x) && Finite(action.y), "演出坐标无效：" + node);
+            if (!string.IsNullOrEmpty(action.effectId)) Require(StoryAssetReferences.IsReference(action.effectId), "特效资源 ID 无效：" + node);
             Require(new[] { "transform", "flash", "shake", "prop", "clearProp", "wait" }.Contains(action.type), "演出动作无效：" + node);
-            if (action.type == "transform") Require(action.slot >= 0 && action.slot <= 2 && !string.IsNullOrWhiteSpace(action.assetId), "变身需指定立绘和槽位：" + node);
-            if (action.type == "prop") Require(!string.IsNullOrWhiteSpace(action.assetId) && !string.IsNullOrWhiteSpace(action.instanceId) && Finite(action.scale) && action.scale > 0 && action.scale <= 10 && Finite(action.x) && Finite(action.y), "道具参数无效：" + node);
+            if (action.type == "shake") Require(action.slot >= -1 && action.slot <= 2, "震动槽位无效：" + node);
+            if (action.type == "transform" || !string.IsNullOrEmpty(action.effectId))
+                Require(Finite(action.scale) && action.scale > 0 && action.scale <= 10 && Finite(action.x) && Finite(action.y), "演出位置/缩放无效：" + node);
+            if (action.type == "transform") Require(action.slot >= 0 && action.slot <= 2 && StoryAssetReferences.IsReference(action.assetId), "变身需指定立绘和槽位：" + node);
+            if (action.type == "prop") Require(StoryAssetReferences.IsReference(action.assetId) && !string.IsNullOrWhiteSpace(action.instanceId) && action.instanceId != "*" && Finite(action.scale) && action.scale > 0 && action.scale <= 10, "道具参数无效：" + node);
             if (action.type == "clearProp") Require(!string.IsNullOrWhiteSpace(action.instanceId), "清除道具需指定实例 ID：" + node);
         }
         private static bool Finite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);

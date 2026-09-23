@@ -30,6 +30,6 @@ namespace BaiguVN
             return refs;
         }
         private static void Add(List<KeyValuePair<string, string>> refs, string id, string kind)
-        { if (IsReference(id)) refs.Add(new KeyValuePair<string, string>(id, kind)); }
+        { if (IsReference(id) || (id == "@clear" && kind != "portrait")) refs.Add(new KeyValuePair<string, string>(id, kind)); }
     }
 }
