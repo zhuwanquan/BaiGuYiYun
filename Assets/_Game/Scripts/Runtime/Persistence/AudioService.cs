@@ -155,6 +155,11 @@ namespace BaiguVN
             seSource.PlayOneShot(clip);
         }
 
+        public void StopSe()
+        {
+            if (seSource != null) { seSource.Stop(); seSource.clip = null; }
+        }
+
         // =========================================================
         // Ambience
         // =========================================================

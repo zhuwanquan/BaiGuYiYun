@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BaiguVN
 {
-    public class StoryRunner : MonoBehaviour
+    public partial class StoryRunner : MonoBehaviour
     {
         [Header("剧情数据")]
         public TextAsset storyJson;
@@ -67,7 +67,8 @@ namespace BaiguVN
             try
             {
                 repository = new StoryRepository();
-                repository.Load(storyJson);
+                LoadRouteContent();
+                InitializeRoutePresentation();
 
                 saveService = new SaveService();
 
@@ -97,6 +98,7 @@ namespace BaiguVN
 
         private void OnDestroy()
         {
+            routeResources?.Dispose();
             if (dialogueView != null &&
                 dialogueView.nextButton != null)
             {
@@ -116,6 +118,14 @@ namespace BaiguVN
 
         public void StartStory()
         {
+            StopAllCoroutines();
+            actionPlayer?.ResetForNewGame();
+            choiceView?.Hide();
+            routeResources?.ClearRoute();
+            stableNode = true;
+            recoveryPromptActive = false;
+            suppressAutoSave = false;
+            LoadRouteContent();
             // 先清除上一局残留的视觉内容
             if (presentation != null)
             {
@@ -128,6 +138,7 @@ namespace BaiguVN
             {
                 audioService.StopBgm();
                 audioService.StopAmbience();
+                audioService.StopSe();
             }
 
             // 创建全新的剧情状态
@@ -153,6 +164,7 @@ namespace BaiguVN
 
         public void Advance()
         {
+            if (!stableNode) return;
             if (menuPaused)
             {
                 return;
@@ -191,7 +203,7 @@ namespace BaiguVN
             }
 
             // observe 节点不用 NextButton 推进
-            if (current.type == "observe")
+            if (current.type == "observe" || current.type == "choice")
             {
                 return;
             }
@@ -329,6 +341,7 @@ namespace BaiguVN
         private void MarkNodeRead(
             VNNode node)
         {
+            if (!CanRecordRewards) return;
             if (node == null ||
                 string.IsNullOrWhiteSpace(node.id))
             {
@@ -513,6 +526,7 @@ namespace BaiguVN
         private void RegisterCompletedChapter(
             VNNode node)
         {
+            if (!CanRecordRewards) return;
             if (node == null ||
                 string.IsNullOrWhiteSpace(
                     node.completeChapter))
@@ -580,6 +594,8 @@ namespace BaiguVN
         private void GoTo(string id)
         {
             VNNode node = repository.Get(id);
+            choiceView?.Hide();
+            stableNode = false;
 
             state.currentNodeId = node.id;
             state.pageIndex = 0;
@@ -683,6 +699,9 @@ namespace BaiguVN
 
             switch (node.type)
             {
+                case "choice":
+                    ShowChoices(node);
+                    break;
                 case "line":
                     observationView.Hide();
 
@@ -725,11 +744,27 @@ namespace BaiguVN
                     break;
             }
 
+            // 进入一个稳定节点以后自动保存到 Slot 0
+            StartCoroutine(FinishNodePresentation(node));
+        }
+
+        // =========================================================
+        // 菜单暂停
+        // =========================================================
+
+        private void CommitStableNode(VNNode node)
+        {
+            if (node.type == "end")
+            {
+                state.runCompleted = true;
+                state.resultId = node.resultId;
+                dialogueView.nextButton.interactable = false;
+            }
             RegisterCompletedChapter(node);
             
             // 跨轮纪念解锁。
             // 只有节点明确填写 memorialId 才触发。
-            if (!string.IsNullOrWhiteSpace(
+            if (CanRecordRewards && !string.IsNullOrWhiteSpace(
                 node.memorialId))
             {
                 UnlockMemorial(
@@ -737,7 +772,7 @@ namespace BaiguVN
                 );
             }
 
-            if (!string.IsNullOrWhiteSpace(
+            if (CanRecordRewards && !string.IsNullOrWhiteSpace(
                 node.collectionId))
             {
                 UnlockCollection(
@@ -745,17 +780,14 @@ namespace BaiguVN
                 );
             }
 
-            // 进入一个稳定节点以后自动保存到 Slot 0
-            AutoSaveCurrent();
         }
-
-        // =========================================================
-        // 菜单暂停
-        // =========================================================
 
         public void SetMenuPaused(bool paused)
         {
             menuPaused = paused;
+            choiceView?.SetInteractable(!paused && (stableNode || recoveryPromptActive));
+            actionPlayer?.SetPaused(paused);
+            presentation?.SetPaused(paused);
         }
 
         public List<HistoryEntry> GetHistoryCopy()
@@ -789,6 +821,12 @@ namespace BaiguVN
 
         public void SaveCurrent(int slot)
         {
+            LastSaveSucceeded = false;
+            if (!stableNode)
+            {
+                Debug.LogWarning("演出尚未结束，请在画面稳定后存档。");
+                return;
+            }
             if (repository == null || state == null)
             {
                 Debug.LogWarning("当前没有可以保存的剧情状态。");
@@ -806,6 +844,7 @@ namespace BaiguVN
                     state.ToSnapshot(repository.ContentVersion);
 
                 saveService.SaveSlot(slot, snapshot);
+                LastSaveSucceeded = true;
 
                 Debug.Log($"已保存到槽位 {slot}。");
             }
@@ -829,6 +868,7 @@ namespace BaiguVN
 
         private void AutoSaveCurrent()
         {
+            if (suppressAutoSave) return;
             if (repository == null || state == null)
             {
                 return;
@@ -876,9 +916,13 @@ namespace BaiguVN
                 return false;
             }
 
-            Restore(snapshot);
-
-            return true;
+            bool restored = RestoreValidated(snapshot);
+            if (restored && (lastLoadRecovered || snapshot.migratedFromV2))
+            {
+                try { saveService.PreserveSlot(slot); }
+                catch (Exception ex) { Debug.LogError("旧存档留档失败，已暂停自动保存：" + ex); suppressAutoSave = true; }
+            }
+            return restored;
         }
 
         // =========================================================
@@ -887,148 +931,8 @@ namespace BaiguVN
 
         public void Restore(VNSnapshot saved)
         {
-            if (saved == null)
-            {
-                Debug.LogError("Restore 收到空存档。");
-                return;
-            }
-
-            GameState restored = new GameState();
-
-            restored.currentNodeId = saved.currentNodeId;
-            restored.pageIndex = saved.pageIndex;
-
-            // -----------------------------------------------------
-            // observed
-            // 落盘时是 List<string>
-            // 内存恢复成 HashSet<string>
-            // -----------------------------------------------------
-
-            restored.observed =
-                saved.observed != null
-                ? new HashSet<string>(saved.observed)
-                : new HashSet<string>();
-
-            // -----------------------------------------------------
-            // history 深拷贝
-            // -----------------------------------------------------
-
-            restored.history =
-                new List<HistoryEntry>();
-
-            if (saved.history != null)
-            {
-                foreach (HistoryEntry entry in saved.history)
-                {
-                    restored.history.Add(
-                        new HistoryEntry
-                        {
-                            nodeId = entry.nodeId,
-                            speaker = entry.speaker,
-                            text = entry.text
-                        }
-                    );
-                }
-            }
-
-            // -----------------------------------------------------
-            // 视觉状态
-            // -----------------------------------------------------
-
-            restored.visuals =
-                saved.visuals != null
-                ? new VisualSnapshot
-                {
-                    backgroundId =
-                        saved.visuals.backgroundId,
-
-                    cgId =
-                        saved.visuals.cgId,
-
-                    leftPortraitId =
-                        saved.visuals.leftPortraitId,
-
-                    centerPortraitId =
-                        saved.visuals.centerPortraitId,
-
-                    rightPortraitId =
-                        saved.visuals.rightPortraitId,
-                    
-                    focusSlot =
-                        saved.visuals.focusSlot,
-
-                    bgmId =
-                        saved.visuals.bgmId,
-
-                    ambienceId =
-                        saved.visuals.ambienceId
-                }
-                : new VisualSnapshot();
-
-            // -----------------------------------------------------
-            // 已完成章节
-            // -----------------------------------------------------
-
-            restored.completedChapters =
-                saved.completedChapters != null
-                ? new List<string>(
-                    saved.completedChapters
-                )
-                : new List<string>();
-
-            restored.mainCompleted =
-                saved.mainCompleted;
-
-            // -----------------------------------------------------
-            // 整体替换当前状态
-            // -----------------------------------------------------
-
-            state = restored;
-
-            // -----------------------------------------------------
-            // 读档只恢复最终画面
-            // 不重新跑 GoTo() 的一次性演出
-            // -----------------------------------------------------
-
-            if (presentation != null)
-            {
-                presentation.ApplySnapshot(
-                    state.visuals
-                );
-            }
-
-            if (audioService != null &&
-                !string.IsNullOrEmpty(
-                    state.visuals.bgmId))
-            {
-                audioService.ApplyBgm(
-                    state.visuals.bgmId
-                );
-            }
-
-            if (audioService != null &&
-                !string.IsNullOrEmpty(
-                    state.visuals.ambienceId))
-            {
-                audioService.ApplyAmbience(
-                    state.visuals.ambienceId
-                );
-            }
-
-            RenderRestoredNode();
-
-            menuPaused = false;
-
-            Debug.Log(
-                $"读档成功，恢复到节点：{state.currentNodeId}"
-            );
+            RestoreValidated(saved);
         }
-
-        // =========================================================
-        // 读档后的 UI 重绘
-        //
-        // 这是你刚才缺少、导致 CS0103 的方法。
-        // =========================================================
 
         private void RenderRestoredNode()
         {
@@ -1044,6 +948,9 @@ namespace BaiguVN
 
             switch (node.type)
             {
+                case "choice":
+                    ShowChoices(node);
+                    break;
                 case "line":
                 case "pause":
                     observationView.Hide();

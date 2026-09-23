@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 2,
-  "contentVersion": "baigu-v2-ch27-formal-1",
+  "schemaVersion": 3,
+  "contentVersion": "baigu-v3-routes-1",
   "startNode": "ch27_s01_001",
   "nodes": [
     {
@@ -260,13 +260,27 @@
       "type": "line",
       "speaker": "八戒",
       "text": "天下和尚也无数，不曾像我这个老和尚罢软。现成的饭，三分儿倒不吃，只等那猴子来，做四分才吃。",
-      "next": "ch27_s04_001"
+      "next": "ch27_first_encounter_arrival"
+    },
+    {
+      "id": "ch27_first_encounter_arrival",
+      "type": "line",
+      "speaker": "旁白",
+      "text": "悟空摘桃归来，睁火眼金睛，认得那送饭的女子是妖。师父还未看破她的身份，悟空心中已有计较。",
+      "next": "ch27_first_encounter_choice"
+    },
+    {
+      "id": "ch27_first_encounter_choice",
+      "type": "choice",
+      "speaker": "孙悟空",
+      "text": "这妖怪就在眼前，俺老孙该如何应对？",
+      "choiceGroupId": "first_encounter"
     },
     {
       "id": "ch27_s04_001",
       "type": "line",
       "speaker": "旁白",
-      "text": "悟空睁火眼金睛，认得女子是妖，放下钵盂，掣棒便打。唐僧忙伸手扯住。",
+      "text": "悟空放下钵盂，掣棒便打。唐僧忙伸手扯住。",
       "next": "ch27_s04_002"
     },
     {
@@ -351,40 +365,7 @@
       "type": "line",
       "speaker": "旁白",
       "text": "罐里哪里是香米饭，竟是一罐长蛆；所谓面筋，竟是满地乱跳的青蛙、癞虾蟆。唐僧才有三分相信。",
-      "next": "ch27_s04_i01"
-    },
-    {
-      "id": "ch27_s04_i01",
-      "type": "observe",
-      "speaker": "旁白",
-      "text": "饭食已经现出真相。可以再查看物证，也可以继续。",
-      "resume": "ch27_s04_014",
-      "objects": [
-        {
-          "id": "i01_jar",
-          "label": "查看青砂罐",
-          "next": "ch27_s04_i01_jar"
-        },
-        {
-          "id": "i01_bottle",
-          "label": "查看绿磁瓶旁",
-          "next": "ch27_s04_i01_bottle"
-        }
-      ]
-    },
-    {
-      "id": "ch27_s04_i01_jar",
-      "type": "line",
-      "speaker": "旁白",
-      "text": "青砂罐里哪里是香米饭，分明是一罐拖尾巴的长蛆。",
-      "next": "ch27_s04_i01"
-    },
-    {
-      "id": "ch27_s04_i01_bottle",
-      "type": "line",
-      "speaker": "旁白",
-      "text": "绿磁瓶旁也不是面筋，而是青蛙、癞虾蟆满地乱跳。",
-      "next": "ch27_s04_i01"
+      "next": "ch27_s04_014"
     },
     {
       "id": "ch27_s04_014",
@@ -825,40 +806,7 @@
       "type": "line",
       "speaker": "旁白",
       "text": "唐僧闻说，倒也信了。",
-      "next": "ch27_s09_i02"
-    },
-    {
-      "id": "ch27_s09_i02",
-      "type": "observe",
-      "speaker": "旁白",
-      "text": "白骨本相已经显露。可以再看证据，也可以继续。",
-      "resume": "ch27_s09_012",
-      "objects": [
-        {
-          "id": "i02_spine",
-          "label": "再看脊梁字迹",
-          "next": "ch27_s09_i02_spine"
-        },
-        {
-          "id": "i02_tangseng",
-          "label": "看唐僧的反应",
-          "next": "ch27_s09_i02_tangseng"
-        }
-      ]
-    },
-    {
-      "id": "ch27_s09_i02_spine",
-      "type": "line",
-      "speaker": "旁白",
-      "text": "粉骷髅脊梁上清楚现着一行字：『白骨夫人』。",
-      "next": "ch27_s09_i02"
-    },
-    {
-      "id": "ch27_s09_i02_tangseng",
-      "type": "line",
-      "speaker": "旁白",
-      "text": "唐僧先是惊疑，听悟空指出本相与字迹后，倒也信了。",
-      "next": "ch27_s09_i02"
+      "next": "ch27_s09_012"
     },
     {
       "id": "ch27_s09_012",
@@ -1068,6 +1016,7 @@
       "type": "end",
       "speaker": "旁白",
       "text": "第二十七回 完",
+      "resultId": "canonical",
       "completeChapter": "B03"
     }
   ]
