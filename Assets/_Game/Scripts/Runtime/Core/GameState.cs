@@ -33,6 +33,7 @@ namespace BaiguVN
             VNSnapshot snapshot = new VNSnapshot
             {
                 contentVersion = contentVersion,
+                hasRouteCheckpoint = checkpoint != null,
                 routeCheckpoint = CloneRunSnapshot(checkpoint)
             };
             CopyTo(snapshot);
@@ -50,7 +51,8 @@ namespace BaiguVN
         {
             if (snapshot == null) throw new ArgumentNullException(nameof(snapshot));
             GameState state = FromRunSnapshot(snapshot);
-            state.checkpoint = CloneRunSnapshot(snapshot.routeCheckpoint);
+            state.checkpoint = snapshot.hasRouteCheckpoint
+                ? CloneRunSnapshot(snapshot.routeCheckpoint) : null;
             return state;
         }
 

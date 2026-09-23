@@ -102,6 +102,7 @@ namespace BaiguVN
         public string magic = "BAIGU_V2_SAVE";
         public int schemaVersion = 3;
         public string contentVersion;
+        public bool hasRouteCheckpoint;
         public VNRunSnapshot routeCheckpoint;
 
         [NonSerialized] public bool migratedFromV2;

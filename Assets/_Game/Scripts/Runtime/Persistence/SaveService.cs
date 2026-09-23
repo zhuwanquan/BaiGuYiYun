@@ -213,7 +213,7 @@ namespace BaiguVN
                 }
 
                 VNSnapshot parsed = JsonUtility.FromJson<VNSnapshot>(json);
-                if (parsed == null || !ValidatePayload(parsed, out error)) return false;
+                if (parsed == null) { error = "存档 JSON 未产生有效对象。"; return false; }
 
                 if (header.schemaVersion == 2)
                 {
@@ -224,8 +224,17 @@ namespace BaiguVN
                     parsed.routeRevision = 0;
                     parsed.resultId = null;
                     parsed.runCompleted = parsed.mainCompleted;
+                    parsed.hasRouteCheckpoint = false;
                     parsed.routeCheckpoint = null;
                 }
+                else if (!parsed.hasRouteCheckpoint)
+                {
+                    // Unity inline serialization can materialize a missing/null
+                    // custom class as an empty object. Presence is explicit.
+                    parsed.routeCheckpoint = null;
+                }
+
+                if (!ValidatePayload(parsed, out error)) return false;
 
                 snapshot = GameState.FromSnapshot(parsed).ToSnapshot(parsed.contentVersion);
                 snapshot.sourceSchemaVersion = header.schemaVersion;
@@ -248,8 +257,8 @@ namespace BaiguVN
                 return false;
             }
             if (!ValidateRun(snapshot, out error)) return false;
-            if (snapshot.routeCheckpoint != null &&
-                !ValidateRun(snapshot.routeCheckpoint, out error))
+            if (snapshot.hasRouteCheckpoint && (snapshot.routeCheckpoint == null ||
+                !ValidateRun(snapshot.routeCheckpoint, out error)))
             {
                 error = $"路线检查点损坏：{error}";
                 return false;
