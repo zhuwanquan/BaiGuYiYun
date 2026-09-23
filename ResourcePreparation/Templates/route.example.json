@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "routeId": "fun_13",
+  "kind": "entertainment",
+  "choiceGroupId": "first_encounter",
+  "title": "身份变化示例（草稿）",
+  "choiceText": "（填写悟空的行动，作为玩家看到的选项）",
+  "order": 113,
+  "status": "draft",
+  "entryNode": "fun_13__n001",
+  "contentRevision": 1,
+  "artReviewed": false,
+  "requiredAssets": [
+    { "id": "fun_13__portrait__wukong_clerk__neutral", "kind": "portrait" }
+  ],
+  "nodes": [
+    {
+      "id": "fun_13__n001",
+      "type": "line",
+      "speaker": "孙悟空",
+      "text": "（填写变身后的正文与对白）",
+      "actions": [
+        { "type": "transform", "slot": 1, "assetId": "fun_13__portrait__wukong_clerk__neutral", "duration": 0.4, "scale": 1 }
+      ],
+      "next": "fun_13__end"
+    },
+    {
+      "id": "fun_13__end",
+      "type": "end",
+      "speaker": "旁白",
+      "text": "（填写本条娱乐路线的通关收尾）",
+      "resultId": "entertainment"
+    }
+  ]
+}

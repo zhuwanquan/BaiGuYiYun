@@ -12,9 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e82a3cbcb4684a3baa3cd3a6f9d3e629, type: 3}
   m_Name: fun_08_resources
   m_EditorClassIdentifier: 
-  entries:
-  - id: fun_08_identity_neutral
-    kind: portrait
-    sprite: {fileID: 0}
-    clip: {fileID: 0}
-    placeholder: 1
+  entries: []

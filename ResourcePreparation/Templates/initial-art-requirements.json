@@ -1,0 +1,98 @@
+[
+    {
+        "routeId":  "fun_01",
+        "status":  "draft",
+        "resourceId":  "fun_01__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_01/portrait/fun_01__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    },
+    {
+        "routeId":  "fun_02",
+        "status":  "draft",
+        "resourceId":  "fun_02__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_02/portrait/fun_02__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    },
+    {
+        "routeId":  "fun_03",
+        "status":  "draft",
+        "resourceId":  "fun_03__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_03/portrait/fun_03__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    },
+    {
+        "routeId":  "fun_04",
+        "status":  "draft",
+        "resourceId":  "fun_04__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_04/portrait/fun_04__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    },
+    {
+        "routeId":  "fun_05",
+        "status":  "draft",
+        "resourceId":  "fun_05__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_05/portrait/fun_05__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    },
+    {
+        "routeId":  "fun_06",
+        "status":  "draft",
+        "resourceId":  "fun_06__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_06/portrait/fun_06__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    },
+    {
+        "routeId":  "fun_07",
+        "status":  "draft",
+        "resourceId":  "fun_07__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_07/portrait/fun_07__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    },
+    {
+        "routeId":  "fun_08",
+        "status":  "draft",
+        "resourceId":  "fun_08__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_08/portrait/fun_08__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    },
+    {
+        "routeId":  "fun_09",
+        "status":  "draft",
+        "resourceId":  "fun_09__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_09/portrait/fun_09__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    },
+    {
+        "routeId":  "fun_10",
+        "status":  "draft",
+        "resourceId":  "fun_10__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_10/portrait/fun_10__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    },
+    {
+        "routeId":  "fun_11",
+        "status":  "draft",
+        "resourceId":  "fun_11__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_11/portrait/fun_11__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    },
+    {
+        "routeId":  "fun_12",
+        "status":  "draft",
+        "resourceId":  "fun_12__portrait__wukong_identity__neutral",
+        "kind":  "portrait",
+        "relativeFile":  "Assets/_Game/ResourceLibrary/fun_12/portrait/fun_12__portrait__wukong_identity__neutral.png",
+        "note":  "新身份确定后，在首次发布前同步调整对象名称与剧本引用。"
+    }
+]

@@ -13,7 +13,7 @@
     "resourceCatalogPath":  "",
     "requiredAssets":  [
                            {
-                               "id":  "fun_05_identity_neutral",
+                               "id":  "fun_05__portrait__wukong_identity__neutral",
                                "kind":  "portrait"
                            }
                        ],
