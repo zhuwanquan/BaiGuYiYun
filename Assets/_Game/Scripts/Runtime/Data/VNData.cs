@@ -93,26 +93,19 @@ namespace BaiguVN
 
         public string bgmId;
         public string ambienceId;
+        public List<VNPropState> props = new List<VNPropState>();
     }
 
     [Serializable]
-    public class VNSnapshot
+    public class VNSnapshot : VNRunSnapshot
     {
         public string magic = "BAIGU_V2_SAVE";
-        public int schemaVersion = 2;
+        public int schemaVersion = 3;
         public string contentVersion;
+        public VNRunSnapshot routeCheckpoint;
 
-        public string currentNodeId;
-        public int pageIndex;
-
-        public List<string> observed = new List<string>();
-        public List<HistoryEntry> history = new List<HistoryEntry>();
-
-        public VisualSnapshot visuals = new VisualSnapshot();
-
-        public List<string> completedChapters = new List<string>();
-
-        public bool mainCompleted;
+        [NonSerialized] public bool migratedFromV2;
+        [NonSerialized] public int sourceSchemaVersion;
     }
 
     [Serializable]

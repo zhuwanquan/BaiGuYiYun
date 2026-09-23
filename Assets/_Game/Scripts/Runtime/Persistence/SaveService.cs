@@ -7,6 +7,15 @@ namespace BaiguVN
     public class SaveService
     {
         private const string SaveMagic = "BAIGU_V2_SAVE";
+        public const int CurrentSchemaVersion = 3;
+
+        // Invalid defaults: omitted header fields must never look like a valid save.
+        [Serializable]
+        private class SaveHeader
+        {
+            public string magic = null;
+            public int schemaVersion = 0;
+        }
 
         private string GetSlotPath(int slot)
         {
@@ -26,7 +35,8 @@ namespace BaiguVN
 
         public bool HasSlot(int slot)
         {
-            return File.Exists(GetSlotPath(slot));
+            string path = GetSlotPath(slot);
+            return File.Exists(path) || File.Exists(path + ".bak");
         }
 
         public void SaveSlot(
@@ -40,9 +50,20 @@ namespace BaiguVN
                 );
             }
 
+            if (snapshot.magic != SaveMagic ||
+                snapshot.schemaVersion != CurrentSchemaVersion)
+            {
+                throw new ArgumentException("只能写入有效的版本 3 存档。", nameof(snapshot));
+            }
+            if (!ValidatePayload(snapshot, out string validationError))
+            {
+                throw new ArgumentException(validationError, nameof(snapshot));
+            }
+
             string path = GetSlotPath(slot);
             string tempPath = path + ".tmp";
             string backupPath = path + ".bak";
+            Directory.CreateDirectory(Application.persistentDataPath);
 
             string json =
                 JsonUtility.ToJson(snapshot, true);
@@ -57,17 +78,11 @@ namespace BaiguVN
             string verifyJson =
                 File.ReadAllText(tempPath);
 
-            VNSnapshot verify =
-                JsonUtility.FromJson<VNSnapshot>(
-                    verifyJson
-                );
-
-            if (verify == null ||
-                verify.magic != SaveMagic ||
-                verify.schemaVersion != 2)
+            if (!TryDeserialize(verifyJson, out VNSnapshot verify, out string verifyError) ||
+                verify.sourceSchemaVersion != CurrentSchemaVersion)
             {
                 throw new Exception(
-                    "存档临时文件校验失败。"
+                    $"存档临时文件校验失败：{verifyError}"
                 );
             }
 
@@ -118,31 +133,12 @@ namespace BaiguVN
                 return null;
             }
 
-            if (snapshot.magic != SaveMagic)
-            {
-                Debug.LogWarning(
-                    "存档 magic 不正确。"
-                );
-
-                return null;
-            }
-
-            if (snapshot.schemaVersion != 2)
-            {
-                Debug.LogWarning(
-                    $"不支持的存档版本：{snapshot.schemaVersion}"
-                );
-
-                return null;
-            }
-
             if (snapshot.contentVersion != contentVersion)
             {
-                Debug.LogWarning(
-                    $"存档内容版本不兼容。存档={snapshot.contentVersion}，当前={contentVersion}"
+                Debug.Log(
+                    $"存档内容版本已变化，将由剧情加载器检查节点和路线兼容性。" +
+                    $"存档={snapshot.contentVersion}，当前={contentVersion}"
                 );
-
-                return null;
             }
 
             return snapshot;
@@ -161,8 +157,13 @@ namespace BaiguVN
                 string json =
                     File.ReadAllText(path);
 
-                return JsonUtility
-                    .FromJson<VNSnapshot>(json);
+                if (TryDeserialize(json, out VNSnapshot snapshot, out string error))
+                {
+                    return snapshot;
+                }
+
+                Debug.LogWarning($"读取存档失败：{path}\n{error}");
+                return null;
             }
             catch (Exception ex)
             {
@@ -172,6 +173,123 @@ namespace BaiguVN
 
                 return null;
             }
+        }
+
+        // Parsing/migration is side-effect free. The original slot and backup
+        // are never rewritten while loading, including legacy version 2 slots.
+        public static bool TryDeserialize(
+            string json, out VNSnapshot snapshot, out string error)
+        {
+            snapshot = null;
+            error = null;
+            try
+            {
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    error = "存档内容为空。";
+                    return false;
+                }
+
+                SaveHeader header = JsonUtility.FromJson<SaveHeader>(json);
+                if (header == null || header.magic != SaveMagic)
+                {
+                    error = "存档 magic 缺失或不正确。";
+                    return false;
+                }
+                if (header.schemaVersion != 2 && header.schemaVersion != CurrentSchemaVersion)
+                {
+                    error = $"不支持的存档版本：{header.schemaVersion}。";
+                    return false;
+                }
+
+                VNSnapshot parsed = JsonUtility.FromJson<VNSnapshot>(json);
+                if (parsed == null || !ValidatePayload(parsed, out error)) return false;
+
+                if (header.schemaVersion == 2)
+                {
+                    // Version 2 had no route/checkpoint data. The runner decides
+                    // whether its surviving node belongs to the canonical route.
+                    parsed.routeId = null;
+                    parsed.routeKind = null;
+                    parsed.routeRevision = 0;
+                    parsed.resultId = null;
+                    parsed.runCompleted = parsed.mainCompleted;
+                    parsed.routeCheckpoint = null;
+                }
+
+                snapshot = GameState.FromSnapshot(parsed).ToSnapshot(parsed.contentVersion);
+                snapshot.sourceSchemaVersion = header.schemaVersion;
+                snapshot.migratedFromV2 = header.schemaVersion == 2;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                error = $"存档 JSON 损坏或格式不正确：{ex.Message}";
+                snapshot = null;
+                return false;
+            }
+        }
+
+        private static bool ValidatePayload(VNSnapshot snapshot, out string error)
+        {
+            if (string.IsNullOrWhiteSpace(snapshot.contentVersion))
+            {
+                error = "存档缺少内容版本。";
+                return false;
+            }
+            if (!ValidateRun(snapshot, out error)) return false;
+            if (snapshot.routeCheckpoint != null &&
+                !ValidateRun(snapshot.routeCheckpoint, out error))
+            {
+                error = $"路线检查点损坏：{error}";
+                return false;
+            }
+            return true;
+        }
+
+        private static bool ValidateRun(VNRunSnapshot snapshot, out string error)
+        {
+            error = null;
+            if (string.IsNullOrWhiteSpace(snapshot.currentNodeId))
+            {
+                error = "存档缺少当前剧情节点。";
+                return false;
+            }
+            if (snapshot.pageIndex < 0 || snapshot.routeRevision < 0)
+            {
+                error = "存档的页码或路线版本不能为负数。";
+                return false;
+            }
+            if (snapshot.history != null)
+            {
+                foreach (HistoryEntry entry in snapshot.history)
+                {
+                    if (entry == null || string.IsNullOrWhiteSpace(entry.nodeId))
+                    {
+                        error = "存档的阅读历史包含无效记录。";
+                        return false;
+                    }
+                }
+            }
+            if (snapshot.visuals != null && snapshot.visuals.props != null)
+            {
+                foreach (VNPropState prop in snapshot.visuals.props)
+                {
+                    if (prop == null || string.IsNullOrWhiteSpace(prop.instanceId) ||
+                        string.IsNullOrWhiteSpace(prop.assetId) ||
+                        !IsFinite(prop.x) || !IsFinite(prop.y) || !IsFinite(prop.scale))
+                    {
+                        error = "存档的画面道具状态损坏。";
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        private static bool IsFinite(float value)
+        {
+            return !float.IsNaN(value) && !float.IsInfinity(value);
         }
     }
 }
